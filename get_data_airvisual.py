@@ -62,8 +62,9 @@ data = {
                  'current': {
                      'pollution': {
                          'ts': '2025-03-17T15:00:00.000Z', 
-                         'aqius': 69, 'mainus': 
-                         'p2', 'aqicn': 27, 
+                         'aqius': 69, 
+                         'mainus': 'p2', 
+                         'aqicn': 27, 
                          'maincn': 'p2'}, 
                          'weather': {
                              'ts': '2025-03-17T15:00:00.000Z', 
