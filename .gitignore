@@ -2,3 +2,6 @@ Modeling.drawio
 *.conf
 airflow docker cli.txt
 docker-compose.txt
+*.pyc
+*.log
+/logs

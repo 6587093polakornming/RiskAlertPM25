@@ -1,0 +1,969 @@
+
+
+<!DOCTYPE html>
+
+<html>
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" /><meta name="description" /><meta name="author" /><link rel="icon" type="image/png" href="img/logo-small.png" /><title>
+	Air Quality of Mahidol University, Salaya
+</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="startbootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link href="startbootstrap/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" /><link href="startbootstrap/vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css" /><link href="https://fonts.googleapis.com/css?family=Prompt:100,400&amp;display=swap&amp;subset=thai" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    
+    <link href="startbootstrap/css/landing-page.css" rel="stylesheet" /><link href="css/SiteCustom.css" rel="stylesheet" />
+
+    <script src="scripts/Highstock-7.2.1/code/highstock.js"></script>
+    <script src="scripts/Highstock-7.2.1/code/modules/series-label.js"></script>
+    <script src="scripts/Highstock-7.2.1/code/modules/data.js"></script>
+    <script src="scripts/Highstock-7.2.1/code/modules/exporting.js"></script>
+
+</head>
+<body class="bg-light">
+    <form method="post" action="./" id="form1">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="EvI+fDMHxRJ2JKnfDP+4yUWbiJFBTsH9UMunGs9I6xqQmYM8me4pVIsMl9Rmnp7ZqaWyC7EOjzco618JZgJM+onqtz3+HkHm0ag5y33HUhCDrclt8fFNeU/YgkzDLBXW9j7r3kxN2O834AXEeI8+w+/1jwMMZaz26F9NkbWnKUMnwu+sn3F+Avmu2Mw50/yguIxfC8VUY8VITKRjveBq4zWsdV282h2FuAvVJCfXVq0v1q1ocF5noQx9ZFnkezdK1rC5nL3oDwBydGu3XvMflW+671RuBK4wZSdhaiSa+8zw46PAI3zkQDOnnp6J5QyaB2/05+hGaBeogkUZsJ9rFTagna1+XDeZ3r7hpKYGQpNCpRLDEreMtZuzlQafzNIN7QhPlj/0Pi5jPenz/gNoYtP6L9dh5iBVpkhHzlfj8/y9glM009mUxaujVd7HTvXF0mB9sC2KuK29EClY9r4Fzr4qGtVEB+9gc3+PRFLiizyWPieBDaLDHvNkVU+Dlv4MfwqSzRjDPV4htkW5A6qw3f8FJN+9tKjzSfgyNCtIp/m2lbkEPDKLuEwB03q44s/BrVXEdc0Un17qBEFZiWcvru6Vw6/jxBgPMq/up87WEiXVPNQtatpCe6V8Qp+UTnAbJdTfsAuC8vC6N48WlumItjBnpaO9LCRdjhnNaUUcecSGQI/LAICs9VWCQABGM54ih40HlUM/P0RkQPX020ipSQrG1y03LpFTQY5U2dsJMJH35nZXYYR/6BcoUEIvXTwQNbf8kxoQe3RXd3XYPmrI/t8s3ewkcWY5myksRqYkH5pYfLyJl9FuN5nPi2PeR+PaPbvno/8ji4IKiYG1WjzCSI88lMjtQbHz3Zs4ULiypSzJOQ/GdtP448S/ynZHfaqoBzMxHYeCXCEJSR/ux+qQduclJz1eB2Ost6qbxPFsGLDleotkqjwBoe3qlQziFRcB9+38muEFIVoU2arhiw03my/bTy87ShWJPwHGD4OKvr4GvouiqJwB2fH7vXojRzCACTYaZNXY3Mu5zMEqyBlE9d7DF+IUagPs2LDcYX8Housq3ClkZ8jmwSaJtNzK8IqqeQiXQrOZ4FdjzL2hz7TK2YK66n5XwhzWWmKN2wipZTEMZmV7hTU89vbv33uXyC4t9q03hGM2sFVcb62xMYnCrVjSTYOHbItBroZ6aQahUGuoh2GyhyExvVt8fixtHLUuLV/GSIHlONVkxcJARuoF4hRcTlehI9wROgDrw7JwCmQzV6QoYegcVgMIsfA91wCMxUjoPEaMMOIBv/e+VyIgY9hyLpMqSfN/Lw8I/N4WMwfAy4roGsp18HGW1NBqAavgzWV8O7TmFQLzkI26d/grchOGYc36y68dCRbEmckTPpOhSdnD+UhteG0uVZHUlvOXMj6A2psFAIGl8jiQlHuFIg==" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="00140C4D" />
+
+
+        <!-- Navigation -->
+        <nav class="navbar static-top">
+            
+            <div class="container-fluid" style="max-width: 1920px;">
+                
+                
+                
+                <img src="img/MUEN_MUICT.png" class="img-fluid" style="max-height: 40px; margin-bottom: 3px;" />
+                <img src="img/sdg.png" class="img-fluid" style="max-height: 40px;" />   
+            </div>
+        </nav>
+
+
+        
+
+    <a id="back-to-top" href="#" class="btn btn-dark btn-lg back-to-top" role="button"><i class="fas fa-chevron-up"></i></a>
+    <div class="container-fluid text-center" style="max-width: 1920px;">
+        <img src="img/AQI_final.jpg" class="img-fluid" />
+    </div>
+    <section class="features-icons bg-light text-center" style="padding-top: 0.5rem; padding-bottom: 0rem;">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-2 col-6 text-center">
+                    <i class="fas fa-cloud fa-fw fa-3x blue"></i>
+                    <br />
+                    <a href="#AQI" class="btn btn-default btn-link">ดัชนีคุณภาพอากาศ
+                        <br />
+                        <small style="font-size: small">Air Quality Index (AQI)</small></a>
+                </div>
+                <div class="col-lg-2 col-6 text-center">
+                    <i class="fab fa-cloudversify fa-fw fa-3x red"></i>
+                    <br />
+                    <a href="#PM" class="btn btn-default btn-link">ฝุ่นละอองในบรรยากาศ
+                        <br />
+                        <small style="font-size: small">Ambient Particulate Matters</small></a>
+                </div>
+                <div class="col-lg-2 col-6 text-center">
+                    <i class="fas fa-bullhorn fa-fw fa-3x green"></i>
+                    <br />
+                    <a href="#Announce" class="btn btn-default btn-link">ประกาศ&nbsp;<small></small>
+                        <br />
+                        <small style="font-size: small">Announcement</small></a>
+                </div>
+                <div class="col-lg-2 col-6 text-center">
+                    <i class="fas fa-info-circle fa-fw fa-3x orange"></i>
+                    <br />
+                    <a href="#FAQ" class="btn btn-default btn-link">คำถามที่พบบ่อย
+                        <br />
+                        <small style="font-size: small">FAQs</small></a>
+                </div>
+                <div class="col-lg-2 col-6 text-center">
+                    <img src="img/train-station_brown.png" class="img-fluid" style="height: 50px" />
+                    <br />
+                    <a href="http://air4thai.pcd.go.th/webV2/station.php?station=bkp85t&parameter=AQI" target="_self" class="btn btn-default btn-link">คุณภาพอากาศ ม.มหิดล บางกอกน้อย
+                        <br />
+                        <small style="font-size: small">Air Quality at Mahidol University, Bangkok Noi</small></a>
+                </div>
+                <div class="col-lg-2 col-6 text-center">
+                    <img src="img/victory_green.png" class="img-fluid" style="height: 50px" />
+                    <br />
+                    <a href="http://air4thai.pcd.go.th/webV2/station.php?station=bkp59t" target="_self" class="btn btn-default btn-link">คุณภาพอากาศ ม.มหิดล พญาไท
+                        <br />
+                        <small style="font-size: small">Air Quality at Mahidol University, Phayathai</small></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <section id="ContentPlaceHolder1_sectionAirQuality" class="features-icons bg-light text-center" style="padding-top: 1rem; padding-bottom: 1rem; border-top: 1px solid rgba(0,0,0,.1);">
+        <div class="container">
+
+            <div class="row mb-3">
+                <div class="col-lg-12 text-center" style="color: darkcyan;">
+                    <h6 class="time">
+                        <span id="ContentPlaceHolder1_lblDateTimeTH">26 มีนาคม 2568, 09:00 น.</span>
+                    </h6>
+                    <h6 class="time">
+                        <span id="ContentPlaceHolder1_lblDateTimeEN">26 March 2025, 09:00 hrs.</span>
+                    </h6>
+                </div>
+            </div>
+            
+            <div id="ContentPlaceHolder1_divAQI_2" class="row">
+                <div class="col-lg-4" style="color: dodgerblue;">
+                    <h2>คุณภาพอากาศ</h2>
+                    <h4>Air Quality</h4>
+                    <div class="alert alert-warning" role="alert" style="color: black; background-color: #92d14f;">
+                        <h2>ดี</h2>
+                        <h4>Satisfactory</h4>
+                    </div>
+                </div>
+                <div class="col-lg-8 text-left">
+                    <h5 style="font-weight: 500; color: grey">
+                        <strong>ประชาชนทั่วไป</strong> : สามารถทำกิจกรรมกลางแจ้งได้ตามปกติ
+                        <br />
+                        <strong>ประชาชนกลุ่มเสี่ยง</strong> : ควรสังเกตอาการผิดปกติ เช่น ไอบ่อย หายใจลำบาก หายใจถี่ หายใจไม่ออก หายใจมีเสียงวี้ด แน่นหน้าอก เจ็บหน้าอก ใจสั่น คลื่นไส้ เมื่อยล้าผิดปกติ หรือ วิงเวียนศีรษะ
+                    </h5>
+                    <h6 style="font-weight: 500; color: grey">
+                        <strong>General public</strong> : able to do outdoor activities normally
+                        <br />
+                        <strong>People who need special health care</strong> : abnormal symptoms should be observed, such as frequent coughing, difficulty breathing, shortness of breath, wheezing, chest tightness, chest pain, palpitations, nausea, unusual fatigue, or dizziness.
+                    </h6>
+                </div>
+            </div>
+            
+            
+            
+
+        </div>
+    </section>
+    
+    <section id="ContentPlaceHolder1_sectionHourlyAirPollutant" class="features-icons bg-light text-center" style="padding-top: 1rem; padding-bottom: 0rem; border-top: 1px solid rgba(0,0,0,.1);">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-lg-12" style="color: dodgerblue;">
+                    <h5 style="font-weight: 400" class="mublue text-center">ความเข้มข้นของสารมลพิษในบรรยากาศรายชั่วโมง</h5>
+                    <h5 style="font-weight: 400" class="mublue text-center">(Hourly Air Pollutant Concentration)</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><span style="color: deepskyblue;">PM<sub>2.5</sub></span><br />
+                        <span id="ContentPlaceHolder1_lblHourlyPM25">29 <small>µg/m<sup>3</sup></small></span></h4>
+                    <h6>ฝุ่นละอองขนาดไม่เกิน 2.5 ไมครอน</h6>
+                    <h6 class="small">Particulate Matters
+                        <br />
+                        with diameter
+                        <br />
+                        ≤ 2.5 micrometers</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><span style="color: deepskyblue">PM<sub>10</sub></span><br />
+                        <span id="ContentPlaceHolder1_lblHourlyPM10">47 <small>µg/m<sup>3</sup></small></span></h4>
+                    <h6>ฝุ่นละอองขนาดไม่เกิน 10 ไมครอน </h6>
+                    <h6 class="small">Particulate Matters
+                        <br />
+                        with diameter
+                        <br />
+                        ≤ 10 micrometers</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><span style="color: deepskyblue">O<sub>3</sub></span><br />
+                        <span id="ContentPlaceHolder1_lblHourlyO3">5 <small>ppb</small></span></h4>
+                    <h6>ก๊าซโอโซน</h6>
+                    <h6 class="small">Ozone</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><span style="color: deepskyblue">CO</span><br />
+                        <span id="ContentPlaceHolder1_lblHourlyCO">0.3 <small>ppm</small></span></h4>
+                    <h6>ก๊าซคาร์บอนมอนอกไซด์</h6>
+                    <h6 class="small">Carbon monoxide</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><span style="color: deepskyblue">NO<sub>2</sub></span><br />
+                        <span id="ContentPlaceHolder1_lblHourlyNO2">9.0 <small>ppb</small></span></h4>
+                    <h6>ก๊าซไนโตรเจนไดออกไซด์</h6>
+                    <h6 class="small">Nitrogen dioxide</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><span style="color: deepskyblue">SO<sub>2</sub></span><br />
+                        <span id="ContentPlaceHolder1_lblHourlySO2">0.6 <small>ppb</small></span></h4>
+                    <h6>ก๊าซซัลเฟอร์ไดออกไซด์</h6>
+                    <h6 class="small">Sulphur dioxide</h6>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ContentPlaceHolder1_sectionHourlyWeather" class="features-icons bg-light text-center" style="padding-top: 0rem; padding-bottom: 1rem;">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-lg-12" style="color: dodgerblue;">
+                    <h5 style="font-weight: 400" class="mublue text-center">สภาพอากาศรายชั่วโมง</h5>
+                    <h5 style="font-weight: 400" class="mublue text-center">(Hourly Weather Conditions)</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><i class="fas fa-thermometer-half" style="color: skyblue"></i>&nbsp;<span id="ContentPlaceHolder1_lblTemperature">31</span>&nbsp;<small>°C</small></h4>
+                    <h5>อุณหภูมิอากาศ</h5>
+                    <h6 class="small">Air Temperature</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><i class="fas fa-tint" style="color: skyblue"></i>&nbsp;<span id="ContentPlaceHolder1_lblHumidity">70</span>&nbsp;<small>%</small></h4>
+                    <h5>ความชื้นสัมพัทธ์</h5>
+                    <h6 class="small">Relative Humidity</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><i class="fas fa-wind" style="color: skyblue"></i>&nbsp;<span id="ContentPlaceHolder1_lblWindSpeed">1.7</span>
+                        <small>m/s</small></h4>
+                    <h5>ความเร็วลม</h5>
+                    <h6 class="small">Wind Speed</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><i class="far fa-compass" style="color: skyblue"></i>&nbsp;<span id="ContentPlaceHolder1_lblWindDirection">152</span>&nbsp;<small>°</small></h4>
+                    <h5>ทิศทางลม</h5>
+                    <h6 class="small">Wind Direction</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><i class="fas fa-cloud-showers-heavy" style="color: skyblue"></i>&nbsp;<span id="ContentPlaceHolder1_lblRainfall">0</span>
+                        <small>mm</small></h4>
+                    <h5>ปริมาณฝน</h5>
+                    <h6 class="small">Rainfall</h6>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h4><i class="fas fa-sun" style="color: skyblue"></i>&nbsp;<span id="ContentPlaceHolder1_lblSolar">753</span>
+                        <small>W/m<sup>2</sup></small></h4>
+                    <h5>รังสีอาทิตย์</h5>
+                    <h6 class="small">Solar Radiation</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <img src="img/MU_PUNYA.png" style="max-width: 150px;" />
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="ContentPlaceHolder1_sectionAQI" class="features-icons bg-light text-center" style="padding-top: 2rem; padding-bottom: 1rem; border-top: 1px solid rgba(0,0,0,.1);">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 text-left mb-3" style="color: dodgerblue;">
+                    <h3 class="section-header-th"><i class="fas fa-cloud blue"></i>&nbsp;ดัชนีคุณภาพอากาศ</h3>
+                    <h5 class="section-header-en">Air Quality Index (AQI)</h5>
+                </div>
+                <div class="col-lg-6 text-right" style="color: darkcyan;">
+                    <h6 class="time">
+                        <span id="ContentPlaceHolder1_lblDateTimeTH2">26 มีนาคม 2568, 09:00 น.</span>
+                    </h6>
+                    <h6 class="time">
+                        <span id="ContentPlaceHolder1_lblDateTimeEN2">26 March 2025, 09:00 hrs.</span>
+                    </h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="fa-10x">
+                            <span class="fa-layers fa-fw">
+                                <i class='fas fa-cloud green'></i>
+                                <span class="fa-layers-text fa-inverse grey" data-fa-transform="shrink-12 down-1" style="font-weight: 900">AQI</span>
+                            </span>
+                            <h4>(PM<sub>2.5</sub>)</h4>
+
+                            <h3>
+                                <span id="ContentPlaceHolder1_lblAQI">39</span>
+                            </h3>
+                            <p class="lead mb-0">(24-hr average)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-6">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="fa-5x">
+                            <span class="fa-layers fa-fw">
+                                <i class='fas fa-cloud yellow'></i>
+                                <span class="fa-layers-text fa-inverse grey" data-fa-transform="shrink-10 left-1" style="font-weight: 900">PM</span>
+                                <span class="fa-layers-text fa-inverse fa-xs grey" data-fa-transform="shrink-12 down-4 right-8" style="font-weight: 900">2.5</span>
+                            </span>
+                        </div>
+                        <h4>
+                            <span id="ContentPlaceHolder1_lblPM25">32</span>
+                            µg/m<sup>3</sup></h4>
+                        <p class="lead mb-0">(24-hr average)</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="fa-5x">
+                            <span class="fa-layers fa-fw">
+                                <i class='fas fa-cloud blue'></i>
+                                <span class="fa-layers-text fa-inverse grey" data-fa-transform="shrink-10 left-1" style="font-weight: 900">PM</span>
+                                <span class="fa-layers-text fa-inverse fa-xs grey" data-fa-transform="shrink-12 down-4 right-7" style="font-weight: 900">10</span>
+                            </span>
+                        </div>
+                        <h4>
+                            <span id="ContentPlaceHolder1_lblPM10">48</span>
+                            µg/m<sup>3</sup></h4>
+                        <p class="lead mb-0">(24-hr average)</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="fa-5x">
+                            <span class="fa-layers fa-fw">
+                                <i class='fas fa-cloud blue'></i>
+                                <span class="fa-layers-text fa-inverse grey" data-fa-transform="shrink-10 left-1" style="font-weight: 900">O</span>
+                                <span class="fa-layers-text fa-inverse fa-xs grey" data-fa-transform="shrink-12 down-4 right-2" style="font-weight: 900">3</span>
+                            </span>
+                        </div>
+                        <h4>
+                            <span id="ContentPlaceHolder1_lblO3">4.7</span>
+                            ppb</h4>
+                        <p class="lead mb-0">(8-hr average)</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="fa-5x">
+                            <span class="fa-layers fa-fw">
+                                <i class='fas fa-cloud blue'></i>
+                                <span class="fa-layers-text fa-inverse grey" data-fa-transform="shrink-10" style="font-weight: 900">CO</span>
+                            </span>
+                        </div>
+                        <h4>
+                            <span id="ContentPlaceHolder1_lblCO">0.3</span>
+                            ppm</h4>
+                        <p class="lead mb-0">(8-hr average)</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="fa-5x">
+                            <span class="fa-layers fa-fw">
+                                <i class='fas fa-cloud blue'></i>
+                                <span class="fa-layers-text fa-inverse grey" data-fa-transform="shrink-10" style="font-weight: 900">NO</span>
+                                <span class="fa-layers-text fa-inverse fa-xs grey" data-fa-transform="shrink-12 down-4 right-7" style="font-weight: 900">2</span>
+                            </span>
+                        </div>
+                        <h4>
+                            <span id="ContentPlaceHolder1_lblNO2">16 ppb</span>
+                        </h4>
+                        <p class="lead mb-0">(1-hr average)</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="fa-5x">
+                            <span class="fa-layers fa-fw">
+                                <i class='fas fa-cloud blue'></i>
+                                <span class="fa-layers-text fa-inverse grey" data-fa-transform="shrink-10" style="font-weight: 900">SO</span>
+                                <span class="fa-layers-text fa-inverse fa-xs grey" data-fa-transform="shrink-12 down-4 right-7" style="font-weight: 900">2</span>
+                            </span>
+                        </div>
+                        <h4>
+                            <span id="ContentPlaceHolder1_lblSO2">0.6 ppb</span>
+                        </h4>
+                        <p class="lead mb-0">(1-hr average)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5 mb-3">
+                <div class="col-lg-12" style="color: dodgerblue;">
+                    <h6 style="font-weight: 400" class="mublue text-center">ดัชนีคุณภาพอากาศรายวัน (Daily AQI)</h6>
+                    <h6 style="font-weight: 400" class="mublue text-center">และสารมลพิษทางอากาศที่มีอิทธิพลสูงสุดต่อคุณภาพอากาศ</h6>
+                    <div id="container1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h6 style="font-weight: 400" class="mublue text-center">เกณฑ์ดัชนีคุณภาพอากาศของประเทศไทย (Thailand Air Quality Index)</h6>
+                    <img src="img/Thailand AQI Classes_2.png" class="img-fluid" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <img src="img/MU_PUNYA.png" style="max-width: 150px;" />
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="ContentPlaceHolder1_sectionPM" class="features-icons bg-light text-center" style="padding-top: 2rem; padding-bottom: 1rem; border-top: 1px solid rgba(0,0,0,.1);">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-lg-12 text-left">
+                    <h3 class="section-header-th"><i class="fab fa-cloudversify red"></i>&nbsp;ฝุ่นละอองในบรรยากาศ</h3>
+                    <h5 class="section-header-en">Ambient Particulate Matters</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h6 style="font-weight: 400" class="mublue mb-2 text-center">ความเข้มข้นฝุ่นละอองขนาดไม่เกิน 2.5 และ 10 ไมครอน</h6>
+                    <h6 style="font-weight: 400" class="mublue mb-2 text-center">(Concentration of PM<sub>2.5</sub> and PM<sub>10</sub>)</h6>
+                    <div id="container2" style="height: 400px; min-width: 310px"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <img src="img/MU_PUNYA.png" style="max-width: 150px;" />
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features-icons bg-light text-center" id="Announce" style="padding-top: 2rem; padding-bottom: 1rem; border-top: 1px solid rgba(0,0,0,.1);">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-left" style="color: dodgerblue;">
+                    <h3 class="section-header-th"><i class="fas fa-bullhorn green"></i>&nbsp;ประกาศ</h3>
+                    <h5 class="section-header-en">Announcement</h5>
+                </div>
+            </div>
+            <div class="row mb-0 mt-3">
+                <div class="col-lg-12 text-left">
+
+                    
+                    <div>
+                        <a href="#" data-toggle="modal" data-target="#announceModal2" data-filename="img/AN1.jpg">
+                            <h5>ร่วมกันลดฝุ่นละอองขนาดเล็ก ด้วยมาตรการ ตรวจสอบ เปลี่ยนใจ ไม่เผา เล่าต่อ
+                            </h5>
+                        </a>
+                    </div>
+                    <hr />
+                    <div>
+                        <a href="#" data-toggle="modal" data-target="#announceModal2" data-filename="img/AN2.jpg">
+                            <h5>รับมือกับ PM<sub>2.5</sub> กลุ่มเสี่ยงที่ต้องเฝ้าระวัง
+                            </h5>
+                        </a>
+                    </div>
+                    <hr />
+                    <div>
+                        <a href="#" data-toggle="modal" data-target="#announceModal2" data-filename="img/AN3.jpg">
+                            <h5>ฝุ่นละออง PM<sub>2.5</sub> และผลกระทบต่อสุขภาพ
+                            </h5>
+                        </a>
+                    </div>
+                    <hr />
+                    <div>
+                        <a href="#" data-toggle="modal" data-target="#announceModal2" data-filename="img/AN4.jpg">
+                            <h5>เลือกหน้ากากแบบใดจึงจะป้องกันฝุ่น PM2.5 ได้มีประสิทธิภาพ
+                            </h5>
+                        </a>
+                    </div>
+                    <hr />
+                    <div>
+                        <a href="#" data-toggle="modal" data-target="#announceModal2" data-filename="img/AN5.jpg">
+                            <h5>เว็บไซต์รายงานคุณภาพอากาศ ตำบลศาลายา อำเภอพุทธมณฑล จังหวัดนครปฐม
+                            </h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <img src="img/MU_PUNYA.png" style="max-width: 150px;" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="announceModal1" tabindex="-1" role="dialog" aria-labelledby="announceModal1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <img src="" class="img-fluid" />
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="announceModal2" tabindex="-1" role="dialog" aria-labelledby="announceModal2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <img src="" class="img-fluid" />
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <section class="features-icons bg-light text-center" id="FAQ" style="padding-top: 2rem; padding-bottom: 1rem; z-index: 998;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-left">
+                    <h3 class="section-header-th"><i class="fas fa-info-circle orange"></i>&nbsp;คำถามที่พบบ่อย</h3>
+                    <h5 class="section-header-en">Frequently Asked Questions (FAQs)</h5>
+                </div>
+            </div>
+            <div class="row mb-0">
+                <div class="col-lg-12 text-left">
+                    <div id="accordion">
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading1">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1" onclick="return false;">คำอธิบายส่วนต่าง ๆ ของเว็บไซต์รายงานคุณภาพอากาศ</a>
+                                </h5>
+                            </div>
+                            <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordion">
+                                <div class="card-body text-left">
+                                    <ul class="list-unstyled">
+                                        <li><strong>ส่วนแรกของเว็บไซต์ </strong></li>
+                                        <li>ประกอบด้วย</li>
+                                        <li>
+                                            <ul>
+                                                <li>ชื่อของเว็บไซต์</li>
+                                                <li>ตราสัญลักษณ์ของ คณะสิ่งแวดล้อมและทรัพยากรศาสตร์ และ คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยมหิดล ซึ่งเป็นหน่วยงานที่ร่วมกันพัฒนาเว็บไซต์</li>
+                                                <li>รายการ (Menu) สำหรับเลือกเข้าใช้งานในส่วนต่าง ๆ ของเว็บไซต์โดยตรง เพื่อความสะดวกในการใช้งาน ได้แก่ ดัชนีคุณภาพอากาศ, ฝุ่นละอองในบรรยากาศ, ประกาศ, คำถามที่พบบ่อย, คุณภาพอากาศ ม.มหิดล พื้นที่บางกอกน้อย, และคุณภาพอากาศ ม.มหิดล พื้นที่พญาไท</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <img src="img/iPad screen_1_crop.png" class="img-fluid text-center mb-5" />
+                                    <ul class="list-unstyled">
+                                        <li><strong>ส่วนแสดงคุณภาพอากาศรายชั่วโมง</strong></li>
+                                        <li>ประกอบด้วย</li>
+                                        <li>
+                                            <ul>
+                                                <li>วันที่และเวลาในการรายงานคุณภาพอากาศ ซึ่งจะปรับปรุงข้อมูลให้เป็นปัจจุบันทุกชั่วโมงแบบอัตโนมัติ</li>
+                                                <li>ระดับคุณภาพอากาศ ซึ่งมี 5 ระดับ คือ ดีมาก, ดี, ปานกลาง, เริ่มมีผลกระทบต่อสุขภาพ และมีผลกระทบต่อสุขภาพ ตามเกณฑ์ดัชนีคุณภาพอากาศของประเทศไทย  ทั้งนี้ คุณภาพอากาศจะอยู่ในระดับใด ขึ้นกับค่าดัชนีคุณภาพอากาศที่คำนวณได้ในแต่ละชั่วโมงแบบอัตโนมัติ</li>
+                                                <li>คำแนะนำในการปฏิบัติตนตามระดับคุณภาพอากาศ</li>
+                                                <li>ลักษณะทางอุตุนิยมวิทยา ได้แก่ อุณหภูมิอากาศ, ความชื้นสัมพัทธ์, ความเร็วลม, ทิศทางลม, ปริมาณฝน และรังสีอาทิตย์</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <img src="img/iPad screen_2_crop.png" class="img-fluid text-center mb-5" />
+                                    <ul class="list-unstyled">
+                                        <li><strong>ส่วนแสดงดัชนีคุณภาพอากาศ</strong></li>
+                                        <li>ประกอบด้วย 2 ส่วนย่อย ได้แก่ ดัชนีคุณภาพอากาศและความเข้มข้นของสารมลพิษทางอากาศรายชั่วโมง และดัชนีคุณภาพอากาศรายวัน</li>
+                                        <br />
+                                        <li><strong><i>ดัชนีคุณภาพอากาศและความเข้มข้นของสารมลพิษทางอากาศรายชั่วโมง</i></strong></li>
+                                        <li>
+                                            <ul>
+                                                <li>วันที่และเวลาในการรายงานดัชนีคุณภาพอากาศ ซึ่งจะปรับปรุงข้อมูลให้เป็นปัจจุบันทุกชั่วโมงแบบอัตโนมัติ</li>
+                                                <li>ค่าดัชนีคุณภาพอากาศ (AQI) รายชั่วโมง ซึ่งเป็นตัวแทนค่าความเข้มข้นของสารมลพิษทางอากาศ 6 ชนิด</li>
+                                                <li>ค่าเฉลี่ยราย 24 ชั่วโมงของฝุ่นละอองขนาดไม่เกิน 2.5 ไมครอน (PM<sub>2.5</sub>) และฝุ่นละอองขนาดไม่เกิน 10 ไมครอน (PM<sub>10</sub>) </li>
+                                                <li>ค่าเฉลี่ยราย 8 ชั่วโมงของก๊าซคาร์บอนมอนอกไซด์ (CO) และก๊าซโอโซน (O<sub>3</sub>)</li>
+                                                <li>ค่าเฉลี่ยรายชั่วโมงของก๊าซซัลเฟอร์ไดออกไซด์ (SO<sub>2</sub>) และก๊าซไนโตรเจนไดออกไซด์ (NO<sub>2</sub>)</li>
+                                            </ul>
+                                        </li>
+                                        <li>ทั้งนี้ สีของรูปก้อนเมฆ ซึ่งแสดงค่าดัชนีคุณภาพอากาศ และสารมลพิษทางอากาศ 6 ชนิด จะเปลี่ยนแปลงไปตามค่าดัชนีคุณภาพอากาศ และความเข้มข้นของสารมลพิษทางอากาศที่คำนวณได้</li>
+                                        <br />
+                                        <li><strong><i>ดัชนีคุณภาพอากาศรายวัน</i></strong></li>
+                                        <li>
+                                            <ul>
+                                                <li>ดัชนีคุณภาพอากาศที่เป็นตัวแทนของแต่ละวัน ย้อนหลัง 2 สัปดาห์ แสดงผลด้วยกราฟแท่ง ซึ่งจะมีสีเปลี่ยนแปลงไปตามค่าดัชนีคุณภาพอากาศที่คำนวณได้ พร้อมกำกับด้วยชื่อสารมลพิษทางอากาศที่มีอิทธิพลสูงสุดต่อดัชนีคุณภาพอากาศในวันนั้น ๆ</li>
+                                                <li>เกณฑ์ดัชนีคุณภาพอากาศของประเทศไทย ซึ่งแบ่งเป็น 5 ระดับ แต่ละระดับใช้สีเป็นสัญลักษณ์ เพื่อแสดงระดับสถานการณ์มลพิษทางอากาศ และผลกระทบต่อสุขภาพอนามัย</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <img src="img/iPad screen_3_crop.png" class="img-fluid text-center mb-5" />
+
+                                    <ul class="list-unstyled">
+                                        <li><strong>ส่วนแสดงปริมาณฝุ่นละอองในบรรยากาศ</strong></li>
+                                        <li>ประกอบด้วย</li>
+                                        <li>
+                                            <ul>
+                                                <li>ความเข้มข้นของ PM<sub>2.5</sub> และ PM<sub>10</sub> เฉลี่ย 24 ชั่วโมงแบบต่อเนื่อง ตลอดระยะเวลาการตรวจวัด แสดงผลด้วยกราฟเส้น (เส้นสีเขียว คือ  PM<sub>2.5</sub> ส่วนเส้นสีส้ม คือ PM<sub>10</sub>)</li>
+                                                <li>ค่ามาตรฐานความเข้มข้นของ PM<sub>2.5</sub> และ PM<sub>10</sub> เฉลี่ย 24 ชั่วโมงในบรรยากาศทั่วไปของประเทศไทย แสดงผลด้วยเส้นประ (เส้นประสีเขียว คือ  PM<sub>2.5</sub> ส่วนเส้นประสีส้ม คือ PM<sub>10</sub>)</li>
+                                                <li>ส่วนบนและส่วนล่างของกราฟ ใช้สำหรับเลือกช่วงเวลาในการแสดงผล เช่น รายวัน, รายสัปดาห์, รายเดือน, ทั้งหมด หรือกำหนดเองแบบจำเพาะเจาะจง</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <img src="img/iPad screen_4_crop.png" class="img-fluid text-center mb-5" />
+
+                                    <ul class="list-unstyled">
+                                        <li><strong>ส่วนแสดงประกาศที่เกี่ยวข้อง</strong></li>
+                                        <li>ประกอบด้วย ประกาศที่เกี่ยวข้องกับการตรวจวัดและการรายงานคุณภาพอากาศ และการคาดหมายลักษณะอากาศ</li>
+                                    </ul>
+
+                                    <ul class="list-unstyled">
+                                        <li><strong>ส่วนแสดงคำถามที่พบบ่อย</strong></li>
+                                        <li>ประกอบด้วย คำถามต่าง ๆ ที่มักพบบ่อย หรือความเข้าใจที่อาจคลาดเคลื่อน พร้อมคำตอบหรือคำอธิบาย</li>
+                                    </ul>
+
+                                    <ul class="list-unstyled">
+                                        <li><strong>ส่วนแสดงเงื่อนไขในการใช้ข้อมูลจากเว็บไซต์ และข้อมูลสำหรับการติดต่อ</strong></li>
+                                        <li>ประกอบด้วย</li>
+                                        <li>
+                                            <ul>
+                                                <li>ข้อความแสดงเงื่อนไขในการใช้ข้อมูลต่าง ๆ จากเว็บไซต์</li>
+                                                <li>ข้อมูลสำหรับการติดต่อคณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล ซึ่งเป็นหน่วยงานที่รับผิดชอบเว็บไซต์</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+
+                                    <img src="img/iPad screen_5_crop.png" class="img-fluid text-center" />
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading5">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse5" aria-expanded="true" aria-controls="collapse5" onclick="return false;">เหตุใดคุณภาพอากาศของแต่ละพื้นที่จึงมีค่าไม่เท่ากัน</a>
+                                </h5>
+                            </div>
+                            <div id="collapse5" class="collapse" aria-labelledby="heading4" data-parent="#accordion">
+                                <div class="card-body text-center">
+                                    <p class="text-left">บ่อยครั้งที่มีคำถามหรือข้อสังเกตว่า เหตุใดคุณภาพอากาศในบรรยากาศทั่วไปของแต่ละพื้นที่จึงมีค่าไม่เท่ากัน หรือบางกรณีแม้เป็นพื้นที่ที่อยู่ใกล้เคียงกัน แต่ค่าที่ได้จากการตรวจวัดคุณภาพอากาศกลับไม่เท่าหรือไม่ใกล้เคียงกัน  ทั้งนี้ เนื่องมาจากสาเหตุหลายประการ ที่สำคัญคือ</p>
+                                    <p class="text-left"><strong>แหล่งกำเนิดมลพิษแตกต่างกัน</strong> พื้นที่ที่แตกต่างกันอาจมีประเภทและจำนวนของแหล่งกำเนิดมลพิษทางอากาศ รวมทั้งปริมาณสารมลพิษที่ปล่อยออกมาจากกิจกรรมในพื้นที่ดังกล่าวแตกต่างกัน ส่งผลให้คุณภาพอากาศมีค่าแตกต่างกันได้ เช่น พื้นที่เมืองชั้นในมักมีปริมาณการจราจรที่หนาแน่นและติดขัดมากกว่าพื้นที่เมืองชั้นนอก ส่งผลให้พื้นที่เมืองชั้นในมีปริมาณสารมลพิษทางอากาศสูงกว่าพื้นที่เมืองชั้นนอก  นอกจากนี้ พื้นที่ที่มีโรงงานอุตสาหกรรมจำนวนมากและขาดระบบการบำบัดมลพิษทางอากาศที่มีประสิทธิภาพ หรือพื้นที่ที่มีการเผาในที่โล่ง จะมีปริมาณสารมลพิษทางอากาศสูงกว่าพื้นที่ที่ไม่มีกิจกรรมดังกล่าว</p>
+                                    <p class="text-left"><strong>ปัจจัยสภาพแวดล้อมแตกต่างกัน</strong> พื้นที่ที่แตกต่างกันอาจมีปัจจัยสิ่งแวดล้อม เช่น ความกดอากาศ อุณหภูมิอากาศ ความเร็วลม ทิศทางลม ปริมาณฝน และความหนาแน่นของอาคารและต้นไม้ แตกต่างกัน  ซึ่งล้วนส่งผลให้คุณภาพอากาศมีค่าแตกต่างกันได้ เช่น พื้นที่ที่ได้รับอิทธิพลจากความกดอากาศสูง จะมีการมุนเวียนของอากาศในแนวดิ่งไม่ดี ทำให้เกิดการสะสมของฝุ่นละออง หรือพื้นที่ที่มีลมพัดและมีสภาพเอื้อต่อการถ่ายเทและหมุนเวียนของอากาศ จะทำให้สารมลพิษทางอากาศกระจายตัวได้ดี ไม่สะสมอยู่ในพื้นที่</p>
+                                    <p class="text-left"><strong>เครื่องวัดคุณภาพอากาศแตกต่างกัน</strong> เครื่องวัดคุณภาพอากาศต่างชนิดกัน จะมีเทคนิคการวัด รวมทั้งความละเอียดและความแม่นยำในการตรวจวัดแตกต่างกัน ส่งผลให้คุณภาพอากาศที่ตรวจวัดได้มีค่าแตกต่างกันได้บ้าง   นอกจากนี้ การสอบเทียบ (Calibration) เครื่องมือ ยังมีผลอย่างมากต่อความถูกต้องและความแม่นยำของค่าที่ตรวจวัดได้  ดังนั้น เครื่องมือที่มีมาตรฐาน ให้ผลการตรวจวัดที่ถูกต้อง แม่นยำ และน่าเชื่อถือ จะต้องผ่านการสอบเทียบและปรับค่าจากโรงงานผลิตหรือจากหน่วยงานที่ให้การรับรองก่อนนำมาใช้งาน และเมื่อนำมาใช้งานแล้ว ควรต้องมีการสอบเทียบเครื่องมือเป็นประจำ</p>
+                                    <p class="text-left"><strong>จุดติดตั้งเครื่องวัดคุณภาพอากาศแตกต่างกัน</strong> กรณีที่ใช้เครื่องวัดคุณภาพอากาศแบบเดียวกัน และติดตั้งอยู่ในจุดที่ใกล้เคียงกัน แต่หากจุดที่ติดตั้งมีลักษณะแตกต่างกัน เช่น ภายในอาคาร ใต้ชายคา ใต้ร่มเงาหรือทรงพุ่มของต้นไม้ หรือกลางแจ้ง ย่อมส่งผลให้คุณภาพอากาศมีค่าแตกต่างกันได้เช่นกัน  ทั้งนี้เป็นผลมาจากปัจจัยสภาพแวดล้อมที่แตกต่างกันดังกล่าวแล้วข้างต้น</p>
+                                    <p class="text-left"><strong>วิธีการคำนวณและมาตรฐานคุณภาพอากาศที่ใช้เทียบกับค่าที่ตรวจวัดได้แตกต่างกัน</strong> เครื่องวัดคุณภาพอากาศแต่ละชนิด และแต่ละรุ่น โดยเฉพาะประเภทเซ็นเซอร์ (Sensor) มีวิธีการคิดคำนวณปริมาณสารมลพิษทางอากาศแตกต่างกันขึ้นกับผู้ผลิตแต่ละราย จึงอาจทำให้ค่าที่ตรวจวัดได้มีความแตกต่างกันบ้าง  หรือในกรณีการรายงานคุณภาพอากาศในเชิงพื้นที่ โดยนำค่าที่ได้จากการตรวจวัด ณ จุดต่าง ๆ มาประมาณค่าให้ครอบคลุมพื้นที่ที่ต้องการ  หากจำนวนข้อมูลที่นำมาใช้ประมาณค่ามีน้อย หรือพื้นที่มีขนาดใหญ่มากเกินไป  ค่าที่ประมาณได้อาจมีความคลาดเคลื่อนจากความเป็นจริงได้   นอกจากนี้ มาตรฐานคุณภาพอากาศหรือค่าดัชนีคุณภาพอากาศ (AQI) ที่นำมาใช้เปรียบเทียบกับค่าที่ตรวจวัดได้อาจแตกต่างกัน โดยการตรวจวัดและการรายงานคุณภาพอากาศของส่วนราชการที่เกี่ยวข้องในประเทศไทย รวมทั้งมหาวิทยาลัยมหิดล เปรียบเทียบค่าที่ตรวจวัดและคำนวณได้กับมาตรฐานคุณภาพอากาศ ตามประกาศคณะกรรมการสิ่งแวดล้อมแห่งชาติ และดัชนีคุณภาพอากาศของประเทศไทย ซึ่งมี 5 ระดับ  ขณะที่เซ็นเซอร์ตรวจวัดคุณภาพอากาศจากต่างประเทศ มักเปรียบเทียบค่าที่ตรวจวัดและคำนวณได้กับดัชนีคุณภาพอากาศของสหรัฐอเมริกา ซึ่งมี 6 ระดับ จึงอาจส่งผลให้คุณภาพอากาศที่รายงานมีค่าแตกต่างกันได้เช่นกัน</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading2">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse2" aria-expanded="true" aria-controls="collapse2" onclick="return false;">เว็บไซต์รายงานคุณภาพอากาศเป็นตัวแทนคุณภาพอากาศของพื้นที่ใด และแสดงค่าสารมลพิษทางอากาศอะไรบ้าง</a>
+                                </h5>
+                            </div>
+                            <div id="collapse2" class="collapse" aria-labelledby="heading2" data-parent="#accordion">
+                                <div class="card-body text-center">
+                                    <p class="text-left">ข้อมูลที่แสดงในเว็บไซต์รายงานคุณภาพอากาศนี้ ได้จากการประมวลผลความเข้มข้นของสารมลพิษทางอากาศที่ตรวจวัดโดยรถตรวจวัดคุณภาพอากาศแบบอัตโนมัติ ของคณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล ซึ่งติดตั้งอยู่บริเวณประตู 3 ริมถนนพุทธมณฑลสาย 4 (พิกัดภูมิศาสตร์ 13.794606<sup>o</sup> N, 100.327256<sup>o</sup> E)  ข้อมูลคุณภาพอากาศที่รายงานใช้เป็นตัวแทนคุณภาพอากาศในรัศมีประมาณ 3 กิโลเมตร จากจุดตรวจวัด</p>
+                                    <img src="img/Q5_1.jpg" class="img-fluid text-center mb-3" />
+                                    <p class="text-left">ดังนั้น นักศึกษา คณาจารย์ บุคลากรของมหาวิทยาลัยมหิดล ตลอดจนประชาชนในพื้นที่ใกล้เคียง ในรัศมี 3 กิโลเมตร สามารถใช้ประโยชน์จากเว็บไซต์รายงานคุณภาพอากาศนี้ในการติดตามคุณภาพอากาศรายชั่วโมงและรายวันได้</p>
+                                    <img src="img/3KM.jpg" class="img-fluid text-center mb-3" />
+                                    <p class="text-left">อนึ่ง การตรวจวัดคุณภาพอากาศในบรรยากาศทั่วไป เป็นการตรวจวัดสารมลพิษทางอากาศ 6 ชนิด แบบต่อเนื่อง ได้แก่ ฝุ่นละอองขนาดไม่เกิน 2.5 ไมครอน ฝุ่นละอองขนาดไม่เกิน 10 ไมครอน ก๊าซคาร์บอนมอนอกไซด์ ก๊าซโอโซน ก๊าซออกไซด์ของไนโตรเจน ก๊าซซัลเฟอร์ไดออกไซด์  จากนั้น นำมาคำนวณค่าดัชนีคุณภาพอากาศ (Air Quality Index : AQI)  นอกจากนี้ยังตรวจวัดลักษณะทางอุตุนิยมวิทยาร่วมด้วย</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading3">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse3" aria-expanded="true" aria-controls="collapse3" onclick="return false;">ข้อมูลที่ได้จากรถตรวจวัดคุณภาพอากาศแบบอัตโนมัติ ของคณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล มีความถูกต้องและแม่นยำเพียงใด</a>
+                                </h5>
+                            </div>
+                            <div id="collapse3" class="collapse" aria-labelledby="heading3" data-parent="#accordion">
+                                <div class="card-body text-center">
+                                    <p class="text-left">ข้อมูลที่ได้จากรถตรวจวัดคุณภาพอากาศแบบอัตโนมัติ ของคณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล ซึ่งแสดงในเว็บไซต์รายงานคุณภาพอากาศ ได้จากเครื่องวัดที่มีมาตรฐาน และมีการสอบเทียบเครื่องมือ (Calibration) เป็นประจำ จึงให้ผลการตรวจวัดที่มีความถูกต้องและแม่นยำสูง ใกล้เคียงกับความเป็นจริง และมีความน่าเชื่อถือทางวิชาการ</p>
+                                    <p class="text-left">ทั้งนี้ รถตรวจวัดคุณภาพอากาศแบบอัตโนมัติ ของคณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล ใช้ระบบเครื่องวัดตามประกาศคณะกรรมการสิ่งแวดล้อมแห่งชาติ และประกาศกรมควบคุมมลพิษ กระทรวงทรัพยากรธรรมชาติและสิ่งแวดล้อม  เครื่องวัดทั้งหมดยังได้รับการยอมรับในระดับสากล และได้การรับรองจากองค์การพิทักษ์สิ่งแวดล้อมแห่งสหรัฐอเมริกา (United States Environmental Protection Agency : US EPA) ว่าเป็นวิธีตรวจวัดมาตรฐาน Federal Reference Method (FRM) หรือ วิธีตรวจวัดอ้างอิง Federal Equivalent Method (FEM) ตามเกณฑ์ที่หน่วยงานกำหนด</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading4">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse4" aria-expanded="true" aria-controls="collapse4" onclick="return false;">หากไม่ได้อยู่ในพื้นที่ศาลายา สามารถใช้ประโยชน์จากเว็บไซต์รายงานคุณภาพอากาศนี้ได้หรือไม่</a>
+                                </h5>
+                            </div>
+                            <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordion">
+                                <div class="card-body text-center">
+                                    <p class="text-left">ใช้ประโยชน์ได้ โดยนักศึกษา คณาจารย์ บุคลากรของมหาวิทยาลัยมหิดล ตลอดจนประชาชนในพื้นที่โดยรอบมหาวิทยาลัยมหิดล พื้นที่บางกอกน้อย และพื้นที่พญาไท สามารถเลือกรายการ (Menu) ที่ส่วนแรกของเว็บไซต์ เพื่อเชื่อมโยงไปยังเว็บไซต์ของกรมควบคุมมลพิษ และติดตามตรวจสอบคุณภาพอากาศบริเวณพื้นที่บางกอกน้อย จากสถานีริมถนนซอยนิคมบ้านพักรถไฟธนบุรี ๕ เขตบางกอกน้อย (b85) และพื้นที่พญาไท จากสถานีริมถนนพญาไท เขตราชเทวี (b4) ได้โดยตรง</p>
+                                    <p class="text-left">นอกจากนี้ ยังสามารถใช้ประโยชน์จากรายการคำถามที่พบบ่อย (FAQs) ซึ่งรวบรวมคำถาม ข้อสงสัย หรือความเข้าใจที่อาจคลาดเคลื่อน พร้อมแสดงคำตอบไว้</p>
+                                    <p class="text-left">สำหรับประชาชนในพื้นที่อื่น ๆ ของกรุงเทพมหานคร สามารถติดตามตรวจสอบคุณภาพอากาศได้จากเว็บไซต์กรมควบคุมมลพิษ <a href="http://air4thai.pcd.go.th" target="_blank">http://air4thai.pcd.go.th</a> หรือ Air4Thai Application และกองจัดการคุณภาพอากาศและเสียง สำนักสิ่งแวดล้อม กรุงเทพมหานคร <a href="https://bangkokairquality.com" target="_blank">https://bangkokairquality.com</a>  ส่วนจังหวัดอื่น ๆ ติดตามตรวจสอบคุณภาพอากาศได้จากเว็บไซต์กรมควบคุมมลพิษ <a href="http://air4thai.pcd.go.th" target="_blank">http://air4thai.pcd.go.th</a></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading6">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse6" aria-expanded="true" aria-controls="collapse6" onclick="return false;">สารมลพิษทางอากาศในบรรยากาศ แหล่งกำเนิด และผลกระทบต่อสุขภาพ</a>
+                                </h5>
+                            </div>
+
+                            <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li>สารมลพิษทางอากาศในบรรยากาศที่สำคัญ ได้แก่</li>
+                                        <br />
+                                        <li><strong>ฝุ่นละอองขนาดไม่เกิน 2.5 ไมครอน (PM<sub>2.5</sub>)</strong></li>
+                                        <br />
+                                        <li>
+                                            <ul>
+                                                <li>เป็นฝุ่นที่มีเส้นผ่านศูนย์กลางไม่เกิน 2.5 ไมโครเมตร (ไมครอน)</li>
+                                                <li>เกิดจากการเผาไหม้เชื้อเพลิงในยานพาหนะ (โดยเฉพาะเครื่องยนต์ดีเซล) การเผาในที่โล่ง (เช่น วัสดุเหลือใช้ทางการเกษตร ขยะ) ไฟป่า และการเผาไหม้เชื้อเพลิงในอุตสาหกรรม</li>
+                                                <li>สามารถเข้าไปถึงถุงลมในปอดได้ ทําให้เกิดโรคในระบบทางเดินหายใจ และโรคปอดต่าง ๆ  หากได้รับในปริมาณมากหรือเป็นเวลานานจะสะสมในเนื้อเยื่อปอด ทําให้การทํางานของปอดเสื่อมประสิทธิภาพ หลอดลมอักเสบ และมีอาการหอบหืด</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><strong>ฝุ่นละอองขนาดไม่เกิน 10 ไมครอน (PM<sub>10</sub>)</strong></li>
+                                        <br />
+                                        <li>
+                                            <ul>
+                                                <li>เป็นฝุ่นที่มีขนาดเส้นผ่านศูนย์กลางไม่เกิน 10 ไมโครเมตร (ไมครอน)</li>
+                                                <li>เกิดจากการเผาไหม้เชื้อเพลิงในยานพาหนะ (โดยเฉพาะเครื่องยนต์ดีเซล) การเผาในที่โล่ง (เช่น วัสดุเหลือใช้ทางการเกษตร ขยะ) การเผาไหม้เชื้อเพลิงในอุตสาหกรรม การบด การโม่ หรือการทําให้เป็นผงจากการก่อสร้างหรือการโม่หิน</li>
+                                                <li>เมื่อหายใจเข้าไปสามารถเข้าไปสะสมในระบบทางเดินหายใจ</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><strong>ก๊าซโอโซน (Ozone : O<sub>3</sub>)</strong></li>
+                                        <br />
+                                        <li>
+                                            <ul>
+                                                <li>เป็นก๊าซที่ไม่มีสีหรือมีสีฟ้าอ่อน มีกลิ่นฉุน ละลายน้ำได้เล็กน้อย </li>
+                                                <li>ก่อให้เกิดการระคายเคืองตา ระบบทางเดินหายใจ และเยื่อบุต่าง ๆ ความสามารถในการทำงานของปอดลดลง เหนื่อยเร็ว โดยเฉพาะในเด็ก คนชรา และคนที่เป็นโรคปอดเรื้อรัง</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><strong>ก๊าซคาร์บอนมอนอกไซด์ (Carbon Monoxide : CO)</strong></li>
+                                        <br />
+                                        <li>
+                                            <ul>
+                                                <li>เป็นก๊าซที่ไม่มีสี กลิ่น และรส</li>
+                                                <li>เกิดจากการเผาไหม้ที่ไม่สมบูรณ์ของเชื้อเพลิงที่มีคาร์บอนเป็นองค์ประกอบ</li>
+                                                <li>สามารถสะสมในร่างกายได้ โดยรวมตัวกับฮีโมโกลบินในเม็ดเลือดแดงได้ดีกว่าออกซิเจนประมาณ 200-250 เท่า ทำให้การลำเลียงออกซิเจนสู่เซลล์ต่าง ๆ ของร่างกายลดน้อยลง ส่งผลให้ร่างกายเกิดอาการอ่อนเพลีย และหัวใจทำงานหนักขึ้น</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><strong>ก๊าซไนโตรเจนไดออกไซด์ (Nitrogen Dioxide : NO<sub>2</sub>)</strong></li>
+                                        <br />
+                                        <li>
+                                            <ul>
+                                                <li>เป็นก๊าซที่ไม่มีสีและกลิ่น ละลายน้ำได้เล็กน้อย</li>
+                                                <li>มีอยู่ทั่วไปในธรรมชาติ หรือเกิดจากการกระทำของมนุษย์ เช่น การเผาไหม้เชื้อเพลิงต่าง ๆ อุตสาหกรรมบางชนิด</li>
+                                                <li>ส่งผลต่อระบบการมองเห็น และผู้ที่มีอาการหอบหืด หรือโรคเกี่ยวกับทางเดินหายใจ</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><strong>ก๊าซซัลเฟอร์ไดออกไซด์ (Sulphur Dioxide : SO<sub>2</sub>)</strong></li>
+                                        <br />
+                                        <li>
+                                            <ul>
+                                                <li>เป็นก๊าซที่ไม่มีสี หรืออาจมีสีเหลืองอ่อนๆ มีรสและกลิ่นที่ระดับความเข้มข้นสูง</li>
+                                                <li>เกิดจากธรรมชาติและการเผาไหม้เชื้อเพลิงที่มีกำมะถัน (ซัลเฟอร์) เป็นส่วนประกอบ สามารถละลายน้ำได้ดี สามารถรวมตัวกับสารมลพิษอื่นแล้วก่อตัวเป็นอนุภาคฝุ่นขนาดเล็ก หรือรวมตัวกับน้ำฝนเกิดเป็นฝนกรด</li>
+                                                <li>ก่อให้เกิดการระคายเคืองต่อเยื่อบุตา ผิวหนัง และระบบทางเดินหายใจ  หากได้รับเป็นเวลานาน จะทำให้เป็นโรคหลอดลมอักเสบเรื้อรัง</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><small>ที่มา : กรมควบคุมมลพิษ. 2562. ข้อมูลดัชนีคุณภาพอากาศ (ออนไลน์). ค้นเมื่อวันที่ 11 พฤศจิกายน 2562. แหล่งข้อมูล <a href="http://air4thai.pcd.go.th/webV2/aqi_info.php" target="_blank">http://air4thai.pcd.go.th/webV2/aqi_info.php.</a></small></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading7">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse7" aria-expanded="true" aria-controls="collapse2" onclick="return false;">มาตรฐานคุณภาพอากาศในบรรยากาศทั่วไป</a>
+                                </h5>
+                            </div>
+                            <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordion">
+                                <div class="card-body text-center">
+                                    <p class="text-left">มาตรฐานคุณภาพอากาศในบรรยากาศทั่วไปของประเทศไทย เป็นดังนี้</p>
+                                    <img src="img/Q2_1.png" class="img-fluid" />
+                                    <br />
+                                    <ul class="list-unstyled text-left mt-3">
+                                        <li>หมายเหตุ :</li>
+                                        <li>
+                                            <ul>
+                                                <li>มาตรฐานค่าเฉลี่ยระยะสั้น (1, 8 และ 24 ชั่วโมง) กำหนดขึ้นเพื่อป้องกันผลกระทบต่อสุขภาพอนามัยอย่างเฉียบพลัน (Acute Effect)</li>
+                                                <li>มาตรฐานค่าเฉลี่ยระยะยาว (1 เดือน และ 1 ปี) กำหนดขึ้นเพื่อป้องกันผลกระทบระยะยาวหรือผลกระทบเรื้อรัง ที่อาจเกิดขึ้นต่อสุขภาพอนามัย (Chronic Effect)</li>
+                                                <li>ppb (part per billion) หรือ ส่วนในพันล้านส่วน</li>
+                                                <li>ppm (part per million) หรือ ส่วนในล้านส่วน</li>
+                                                <li>µg/m<sup>3</sup> (microgram per cubic meter) หรือ ไมโครกรัมต่อลูกบาศก์เมตร</li>
+                                                <li>mg/m<sup>3</sup> (milligram per cubic meter) หรือ มิลลิกรัมต่อลูกบาศก์เมตร</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><small>ที่มา : กรมควบคุมมลพิษ. 2562. ข้อมูลดัชนีคุณภาพอากาศ (ออนไลน์). ค้นเมื่อวันที่ 11 พฤศจิกายน 2562. แหล่งข้อมูล <a href="http://www.pcd.go.th/info_serv/reg_std_airsnd01.html#s1" target="_blank">http://www.pcd.go.th/info_serv/reg_std_airsnd01.html#s1.</a></small></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading8">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse8" aria-expanded="true" aria-controls="collapse3" onclick="return false;">ดัชนีคุณภาพอากาศ</a>
+                                </h5>
+                            </div>
+                            <div id="collapse8" class="collapse" aria-labelledby="heading8" data-parent="#accordion">
+                                <div class="card-body text-center">
+                                    <p class="text-left">ดัชนีคุณภาพอากาศ (Air Quality Index : AQI) เป็นการรายงานข้อมูลคุณภาพอากาศในรูปแบบที่ประชาชนทำความเข้าใจได้ง่าย เพื่อให้ทราบถึงสถานการณ์มลพิษทางอากาศในแต่ละพื้นที่ว่าอยู่ในระดับใด มีผลกระทบต่อสุขภาพอนามัยหรือไม่ และควรปฏิบัติตนอย่างไร</p>
+                                    <p class="text-left">ดัชนีคุณภาพอากาศใช้เป็นตัวแทนค่าความเข้มข้นของสารมลพิษทางอากาศ 6 ชนิด ประกอบด้วย ฝุ่นละอองขนาดไม่เกิน 2.5 ไมครอน ฝุ่นละอองขนาดไม่เกิน 10 ไมครอน ก๊าซคาร์บอนมอนอกไซด์ ก๊าซโอโซน ก๊าซไนโตรเจนไดออกไซด์ และ ก๊าซซัลเฟอร์ไดออกไซด์</p>
+                                    <p class="text-left">ดัชนีคุณภาพอากาศคำนวณจากค่าความเข้มข้นของสารมลพิษทางอากาศ  โดยมีระดับของค่าความเข้มข้นของสารมลพิษทางอากาศเทียบเท่ากับค่าดัชนีคุณภาพอากาศที่ระดับต่าง ๆ แสดงดังตาราง</p>
+                                    <img src="img/Q3_1.png" class="img-fluid text-center" />
+                                    <br />
+                                    <p class="text-left mt-3">การคำนวณดัชนีคุณภาพอากาศภายในช่วงระดับ เป็นสมการเส้นตรง ดังนี้</p>
+                                    <img src="img/Q3_2.png" class="img-fluid text-center" />
+                                    <br />
+                                    <p class="text-left small">ที่มา : กรมควบคุมมลพิษ. 2562. ข้อมูลดัชนีคุณภาพอากาศ (ออนไลน์). ค้นเมื่อวันที่ 11 พฤศจิกายน 2562. แหล่งข้อมูล <a href="http://air4thai.pcd.go.th/webV2/aqi_info.php" target="_blank">http://air4thai.pcd.go.th/webV2/aqi_info.php.</a></p>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-1">
+                            <div class="card-header" id="heading9">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-question-circle"></i>
+                                    <a href="#" data-toggle="collapse" data-target="#collapse9" aria-expanded="true" aria-controls="collapse9" onclick="return false;">ดัชนีคุณภาพอากาศ และคำแนะนำในการปฏิบัติตน</a>
+                                </h5>
+                            </div>
+                            <div id="collapse9" class="collapse" aria-labelledby="heading9" data-parent="#accordion">
+                                <div class="card-body text-center">
+                                    <p class="text-left">ดัชนีคุณภาพอากาศของประเทศไทยแบ่งเป็น 5 ระดับ แต่ละระดับใช้สีเป็นสัญลักษณ์  ดัชนีคุณภาพอากาศ 100 มีค่าเทียบเท่ามาตรฐานคุณภาพอากาศในบรรยากาศโดยทั่วไป  หากดัชนีคุณภาพอากาศมีค่าสูงเกินกว่า 100 แสดงว่า ความเข้มข้นของสารมลพิษทางอากาศมีค่าเกินมาตรฐาน และคุณภาพอากาศเริ่มมีผลกระทบต่อสุขภาพอนามัยของประชาชน</p>
+                                    <img src="img/Q4_1.jpg" class="img-fluid text-center" />
+                                    <br />
+                                    <p class="text-left small mt-3">ที่มา : กรมควบคุมมลพิษ. 2562. ข้อมูลดัชนีคุณภาพอากาศ (ออนไลน์). ค้นเมื่อวันที่ 11 พฤศจิกายน 2562. แหล่งข้อมูล <a href="http://air4thai.pcd.go.th/webV2/aqi_info.php" target="_blank">http://air4thai.pcd.go.th/webV2/aqi_info.php.</a></p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <img src="img/MU_PUNYA.png" style="max-width: 150px;" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="UrgentModal" tabindex="-1" role="dialog" aria-labelledby="UrgentModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-bullhorn fa-fw green"></i>&nbsp;ประกาศ</h5>
+                </div>
+                <div class="modal-body">
+                    
+                    <img src="img/27280220021.jpg" class="img-fluid" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <hr />
+        <!-- Footer -->
+        <footer class="footer bg-light" style="padding-top: 1rem; padding-bottom: 1rem; z-index: 998">
+            <div class="container">
+                <div class="row">
+                    <p class="col-lg-12 text-center" style="color: darkviolet">
+                        ข้อมูลทั้งหมดในเว็บไซต์นี้ใช้เพื่อแจ้งเตือนและแนะนำการปฏิบัติตนเท่านั้น การนำข้อมูลไปใช้ต้องศึกษาก่อนและเป็นความรับผิดชอบของผู้ใช้<br />
+                        การนำข้อมูลส่วนใดส่วนหนึ่งหรือทั้งหมดจากเว็บไชต์ไปใช้นอกเหนือจากวัตถุประสงค์ดังกล่าวมา ต้องได้รับการอนุญาตอย่างเป็นลายลักษณ์อักษร
+                    </p>
+
+                    
+
+                    <p class="col-lg-12 text-center mt-3" style="color: #AD841F;">
+                        คณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล<br />
+                        <small>999 ถนนพุทธมณฑลสาย 4 ตำบลศาลายา อำเภอพุทธมณฑล จังหวัดนครปฐม 73170</small><br />
+                        <small>Faculty of Environment and Resource Studies, Mahidol University 999 Phutthamonthon 4 Road, Salaya, Phutthamonthon Nakhon Pathom, 73170</small><br />
+                    </p>
+                    <div class="col-lg-12 h-100 text-center text-lg-center my-auto small" style="z-index: 998">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item mr-3">
+                                <i class="fas fa-phone-square-alt fa-fw"></i>
+                                0 2441 5000
+                            </li>
+                            <li class="list-inline-item mr-3">
+                                <i class="fas fa-fax fa-fw"></i>
+                                0 2441 9509-10
+                            </li>
+                            <li class="list-inline-item mr-3">
+                                <i class="fas fa-globe fa-fw"></i>
+                                <a href="https://en.mahidol.ac.th/" target="_blank">https://en.mahidol.ac.th/
+                                </a>
+                            </li>
+                            <li class="list-inline-item mr-3">
+                                <i class="fab fa-facebook fa-fw"></i>
+                                <a href="https://www.facebook.com/en.mahidol/" target="_blank">en.mahidol
+                                </a>
+
+                            </li>
+
+                            <li class="list-inline-item">
+                                <i class="fab fa-instagram fa-fw"></i>
+                                <a href="https://www.instagram.com/en.mahidol/?hl=th" target="_blank">en.mahidol
+                                </a>
+
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+        </footer>
+
+        <!-- Bootstrap core JavaScript -->
+        <script src="startbootstrap/vendor/jquery/jquery.min.js"></script>
+        <script src="startbootstrap/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="https://use.fontawesome.com/releases/v5.11.2/js/all.js"></script>
+
+        
+
+    <script src="scripts/AQI_BAR_M.js"></script>
+    
+    <script src="scripts/APM.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //$(window).on('load', function () {
+            //    $('#UrgentModal').modal('show');
+            //});
+
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 50) {
+                    $('#back-to-top').fadeIn();
+                } else {
+                    $('#back-to-top').fadeOut();
+                }
+            });
+            // scroll body to 0px on click
+            $('#back-to-top').click(function () {
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 400);
+                return false;
+            });
+        });
+
+        $('#announceModal1').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            var filename = button.data('filename')
+            var modal = $(this)
+            modal.find('img').attr("src", filename);
+        })
+
+        $('#announceModal2').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            var filename = button.data('filename')
+            var modal = $(this)
+            modal.find('img').attr("src", filename);
+        })
+    </script>
+
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156266292-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', 'UA-156266292-1');
+        </script>
+
+    </form>
+</body>
+</html>
