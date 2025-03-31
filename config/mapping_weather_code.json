@@ -1,0 +1,14 @@
+{
+    "01d": { "name": "clear sky day"},
+    "01n": { "name": "clear sky night"},
+    "02d": { "name": "few cloud day"},
+    "02n": { "name": "few cloud night"},
+    "03d": { "name": "scattered clouds"},
+    "04d": { "name": "broken clouds"},
+    "09d": { "name": "shower rain"},
+    "10d": { "name": "rain (day time)"},
+    "10n": { "name": "rain (night time)"},
+    "11d": { "name": "thunderstorm"},
+    "13d": { "name": "snow"},
+    "50d": { "name": "mist"}
+}

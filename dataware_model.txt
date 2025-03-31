@@ -1,0 +1,67 @@
+dimDateTimeTable 
+- date_time (PK, datetime)
+- date (date)
+- time (time)
+- day (int)
+- month (int)
+- year (int)
+- hour (int)
+
+dimLocationTable
+- location_id (PK, increment key, int)
+- lat (decimal)
+- long (decimal)
+- description (varchar)
+- country (varchar)
+- state (varchar)
+- city (varchar)
+
+dimMainPollutionTable
+- main_pollution_code (PK, varchar)
+- unit (varchar)
+- name_pollution (varchar)
+
+
+factAir4thaiTable
+- date_time (FK, datetime)
+- location_id (FK, int)
+- main_pollution_code (FK, varchar)
+- AQI (decimal)
+- PM25_value (decimal)
+- PM10_value (decimal)
+- O3_value (decimal)
+- CO_value (decimal)
+- NO2_value (decimal)
+- SO2_value (decimal)
+
+
+factAirVisualTable
+- date_time (FK, datetime)
+- location_id (FK, int)
+- main_pollution_code (FK, varchar)
+- AQI_US (decimal)
+- temperature_c (decimal)
+- pressure (decimal)
+- humidity (decimal)
+- wind_speed (decimal)
+- wind_direction (decimal)
+- weather_text (varchar)
+
+factMahidolAqiTable
+- date_time (FK, datetime)
+- location_id (FK, int)
+- main_pollution_code (FK, varchar)
+- air_quality_text (vachar)
+- AQI (decimal)
+- PM25_value (decimal)
+- PM10_value (decimal)
+- O3_value (decimal)
+- CO_value (decimal)
+- NO2_value (decimal)
+- SO2_value (decimal)
+- temperature_c (decimal)
+- humidity (decimal)
+- wind_speed (decimal)
+- wind_direction (decimal)
+- rainfall (decimal)
+- solar_radiation (decimal)

@@ -94,6 +94,7 @@ print(data.decode("utf-8"))
 """
 
 import http.client, json, configparser
+from datetime import datetime
 
 def get_data_from_airvisual():
     config = configparser.ConfigParser()
@@ -159,6 +160,47 @@ data = {
         }
 
 if __name__ == "__main__":
-    pass
+    from datetime import datetime, timedelta
     # print(data)
     # get_data_from_airvisual()
+
+    # ตรวจสอบ datetime ของข้อมูลล่าสุด
+    # ts_str = data["data"]["current"]["pollution"]["ts"]
+    # ts_str = "2025-03-30T12:00:00.000Z"
+    # prev_dt_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # prev_dt_obj = prev_dt_obj + timedelta(hours=7)
+    # prev_dt_str = prev_dt_obj.strftime("%Y-%m-%d %H:%M")
+    # print(prev_dt_str)
+    # print(data["data"]["current"]["pollution"]["ts"])
+    # ts_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    # current_dt_str = ts_obj.strftime("%Y-%m-%d %H:%M")
+    # print(ts_obj)
+    # prev_dt_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # print(prev_dt_obj.strftime("%Y-%m-%d %H:%M"))
+
+
+    # =============
+    data = {
+        "Datetime": "2025-03-30T22:00:00",
+        "Air Quality": "Satisfactory",
+        "Main Pollution": "PM2.5",
+        "AQI": "42",
+        "PM25": "16",
+        "PM10": "25",
+        "O3": "16.7",
+        "CO": "0.1",
+        "NO2": "6.4",
+        "SO2": "0.03",
+        "Temperature": "30",
+        "Humidity": "72",
+        "Wind Speed": "1.6",
+        "Wind Direction": "141",
+        "Rainfall": "0",
+        "Solar Radiation": "755"
+    }
+    date_time_str = data["Datetime"]
+    date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%S")
+    print(date_time_obj)
+    print(date_time_obj.strftime("%Y-%m-%d"))
+    print(date_time_obj.strftime("%H:%M:%S"))
