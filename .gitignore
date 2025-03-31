@@ -6,3 +6,4 @@ docker-compose.txt
 *.log
 /logs
 /backup_db
+ETC/connection_airflow.txt
