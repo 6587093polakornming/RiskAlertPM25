@@ -196,7 +196,7 @@ with DAG('mahidol_aqi_pipeline_v1-2',
 
 if __name__ == "__main__":
     # โหลดไฟล์ HTML
-    with open("mahidol_aqi.html", "r", encoding="utf-8") as file:
+    with open("data/mahidol_aqi_main_o3_detech.html", "r", encoding="utf-8") as file:
         soup = BeautifulSoup(file, "html.parser")
 
     # ดึงข้อมูล datetime

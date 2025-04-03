@@ -2,7 +2,7 @@ import json
 import requests
 import logging
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import configparser
 
 from airflow import DAG
@@ -21,16 +21,6 @@ OUTPUT_FILE = OUTPUT_DIR / "tmp_airvisual.json"
 CITY = "Salaya"
 STATE = "Nakhon Pathom"
 COUNTRY = "Thailand"
-
-
-from enum import Enum
-
-class StateFlow(Enum):
-    RESET = 0
-    NORMAL = 1
-    ONLY_WEATHER = 2
-    ONLY_POLLUTION = 3
-    ERROR = 4
 
 # ============ FUNCTIONS ============ #
 def get_cursor():
@@ -70,6 +60,16 @@ def get_dt_str_ts_bangkok(ts_str: str):
         return current_dt_str
     except:
         return None
+    
+def get_dt_str_ts(ts_str: str):
+    try:
+        # ตรวจสอบ datetime ของข้อมูลล่าสุด
+        # ts_str = data["data"]["current"]["pollution"]["ts"]
+        ts_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        current_dt_str = ts_obj.strftime("%Y-%m-%d %H:%M")
+        return current_dt_str
+    except:
+        return None    
 
 def get_data_from_airvisual(ti=None):
     config = configparser.ConfigParser()
@@ -109,17 +109,10 @@ def get_data_from_airvisual(ti=None):
             ti.xcom_push(key='prev_dt_str', value=prev_dt_str)
             ti.xcom_push(key='w_prev_dt_str', value=w_prev_dt_str)
 
-            prev_dt_str = get_dt_str_ts_bangkok(prev_dt_str) 
-            w_prev_dt_str = get_dt_str_ts_bangkok(w_prev_dt_str)
             if current_dt_str == prev_dt_str \
-                and w_current_dt_str == w_prev_dt_str  \
-                and is_data_in_db(prev_dt_str) \
-                and is_data_in_db(w_prev_dt_str):
+                and w_current_dt_str == prev_dt_str  \
+                and is_data_in_db(prev_dt_str):
                 raise Exception(f"Data has not been updated yet: {current_dt_str} == {prev_dt_str}")
-            
-        if not OUTPUT_FILE.exists():
-            ti.xcom_push(key='prev_dt_str', value=None)
-            ti.xcom_push(key='w_prev_dt_str', value=None)
 
         # ใช้หลักการ "Atomic File Write":
         tmp_path = Path(str(OUTPUT_FILE) + ".tmp")
@@ -147,7 +140,7 @@ def load_airvisual_to_postgres(ti=None):
     def parse_utc_to_bangkok(ts_str):
         return datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(hours=7)
     conn, cursor = get_cursor()
-    state_flow = StateFlow.RESET  # 0: reset, 1: Normal, 2: Only weather, 3: Only pollution, 4: error
+    state_flow = 0  # 0: reset, 1: Normal, 2: Only weather, 3: Only pollution, 4: error
     try:
         # Load mapping files
         with open('/opt/airflow/config/mapping_main_pollution.json', 'r', encoding='utf-8') as mf:
@@ -164,49 +157,31 @@ def load_airvisual_to_postgres(ti=None):
         pollution_ts = contents_data["current"]["pollution"]["ts"]
         weather_ts = contents_data["current"]["weather"]["ts"]
 
-        # ดึงข้อมูล previous
+        prev_dt_str, w_prev_dt_str = None, None
         prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='prev_dt_str')
         w_prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='w_prev_dt_str')
-        is_first_run = not prev_dt_str or not w_prev_dt_str
 
-        # ISO datetime ปัจจุบันในรูปแบบ UTC
-        iso_format_str = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:00:00.000Z")
-        logging.info(f"current datetime iso format: {iso_format_str}")
-        logging.info(f"weather_ts: {weather_ts} | pollution_ts: {pollution_ts}")
-        logging.info(f"prev_dt_str: {prev_dt_str} | w_prev_dt_str: {w_prev_dt_str}")
+        # Flow Conditions
+        date_time_obj, date_time_obj_bangkok = None, None
+        date_str, time_str = None, None
 
-        date_time_obj = None
-        if weather_ts == pollution_ts and pollution_ts == iso_format_str:
+        logging.info(f"weather_ts: {weather_ts} pollution_ts: {pollution_ts}")
+        logging.info(f"w_prev_dt_st: {w_prev_dt_str} prev_dt_str: {prev_dt_str}")
+        if weather_ts == pollution_ts:
             date_time_obj = parse_utc_to_bangkok(pollution_ts)
-            state_flow = StateFlow.NORMAL
-            logging.info("flow state1: both timestamps are the same")
-        elif not is_first_run:
-            weather_updated = weather_ts != w_prev_dt_str
-            pollution_updated = pollution_ts != prev_dt_str
-
-            if weather_updated and not pollution_updated:
-                date_time_obj = parse_utc_to_bangkok(weather_ts)
-                state_flow = StateFlow.ONLY_WEATHER
-                logging.info("flow state2: only weather updated")
-            elif not weather_updated and pollution_updated:
-                date_time_obj = parse_utc_to_bangkok(pollution_ts)
-                state_flow = StateFlow.ONLY_POLLUTION
-                logging.info("flow state3: only pollution updated")
-            else:
-                state_flow = StateFlow.ERROR
-                logging.warning("flow error: unrecognized pattern (non-first run)")
-        else: # First RUN
-            if weather_ts == iso_format_str:
-                date_time_obj = parse_utc_to_bangkok(weather_ts)
-                state_flow = StateFlow.ONLY_WEATHER
-                logging.info("flow state2: first run, only weather matches current time")
-            elif pollution_ts == iso_format_str:
-                date_time_obj = parse_utc_to_bangkok(pollution_ts)
-                state_flow = StateFlow.ONLY_POLLUTION
-                logging.info("flow state3: first run, only pollution matches current time")
-            else:
-                state_flow = StateFlow.ERROR
-                logging.warning("flow error: unrecognized pattern (first run)")
+            state_flow = 1
+            logging.info("flow state1")
+        elif weather_ts != pollution_ts and weather_ts != w_prev_dt_str and pollution_ts == prev_dt_str:
+            date_time_obj = parse_utc_to_bangkok(weather_ts)
+            state_flow = 2
+            logging.info("flow state2")
+        elif weather_ts != pollution_ts and weather_ts == w_prev_dt_str and pollution_ts != prev_dt_str:
+            date_time_obj = parse_utc_to_bangkok(pollution_ts)
+            state_flow = 3
+            logging.info("flow state3")
+        else:
+            state_flow = 4
+            logging.warning("Unrecognized data flow state.")
 
         if date_time_obj:
             date_time_obj_bangkok = date_time_obj
@@ -277,14 +252,14 @@ def load_airvisual_to_postgres(ti=None):
         """, (
             date_time_obj_bangkok,
             location_id,
-            main_code if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_POLLUTION) else "PM2.5",
-            contents_data["current"]["pollution"]["aqius"] if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_POLLUTION) else None,
-            weather_data.get("tp") if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None,
-            weather_data.get("pr") if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None,
-            weather_data.get("hu") if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None,
-            weather_data.get("ws") if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None,
-            weather_data.get("wd") if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None,
-            weather_name if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None
+            main_code if state_flow in (1, 3) else None,
+            contents_data["current"]["pollution"]["aqius"] if state_flow in (1, 3) else None,
+            weather_data.get("tp") if state_flow in (1, 2) else None,
+            weather_data.get("pr") if state_flow in (1, 2) else None,
+            weather_data.get("hu") if state_flow in (1, 2) else None,
+            weather_data.get("ws") if state_flow in (1, 2) else None,
+            weather_data.get("wd") if state_flow in (1, 2) else None,
+            weather_name if state_flow in (1, 2) else None
         ))
 
         conn.commit()
@@ -309,7 +284,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='airvisual_pipeline_v1_23',
+    dag_id='airvisual_pipeline_v1_21',
     schedule_interval='30 * * * *',
     default_args=default_args,
     description='A simple data pipeline for airvisual API',

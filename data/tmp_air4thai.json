@@ -9,12 +9,12 @@
   "long": "100.057961",
   "forecast": [],
   "AQILast": {
-    "date": "2025-03-31",
+    "date": "2025-04-03",
     "time": "09:00",
     "PM25": {
-      "color_id": "2",
-      "aqi": "50",
-      "value": "25.0"
+      "color_id": "3",
+      "aqi": "74",
+      "value": "30.9"
     },
     "PM10": {
       "color_id": "0",
@@ -42,8 +42,8 @@
       "value": "-1"
     },
     "AQI": {
-      "color_id": "2",
-      "aqi": "50",
+      "color_id": "3",
+      "aqi": "74",
       "param": "PM25"
     }
   }

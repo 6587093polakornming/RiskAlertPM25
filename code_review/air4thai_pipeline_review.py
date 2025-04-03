@@ -35,6 +35,7 @@ def is_data_in_db(date_time_str):
         cursor.close()
         conn.close()
 
+# --- ====== TASK 1 ====== ---
 def get_data_from_air4thai():
     logging.info("Sending request to AIR4THAI API...")
     try:
@@ -57,9 +58,9 @@ def get_data_from_air4thai():
         if OUTPUT_FILE.exists():
             with open(OUTPUT_FILE, "r", encoding="utf-8") as f_check:
                 prev_data = json.load(f_check)
-            prev_date = prev_data["AQILast"]["date"]
-            prev_time = prev_data["AQILast"]["time"]
-            prev_dt_str = f"{prev_date} {prev_time}"
+            prev_date_str = prev_data["AQILast"]["date"]
+            prev_time_str = prev_data["AQILast"]["time"]
+            prev_dt_str = f"{prev_date_str} {prev_time_str}"
 
             #เช็คว่าไฟล์ JSON ล่าสุด ตรวจสอบว่า datetime นี้มีอยู่แล้วหรือไม่ใน DB
             if current_dt_str == prev_dt_str and is_data_in_db(prev_dt_str):
@@ -79,20 +80,22 @@ def get_data_from_air4thai():
         logging.error(f"Error fetching data from AIR4THAI: {e}")
         raise
 
+# --- ====== TASK 2 ====== ---
 def read_json_data():
     try:
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
+        logging.info("Extracted data: %s", data)
         logging.info("Read JSON data successfully.")
         # Optional: validate or transform data here
     except Exception as e:
         logging.error(f"Error reading JSON file: {e}")
         raise
 
+# --- ====== TASK 3 ====== ---
 def load_air4thai_to_postgres():
     logging.info("Starting load_air4thai_to_postgres")
     conn, cursor = get_cursor()
-
     try:
         # Load pollution mapping from config
         with open('/opt/airflow/config/mapping_main_pollution.json', 'r', encoding='utf-8') as mf:
@@ -102,9 +105,9 @@ def load_air4thai_to_postgres():
         with open('/opt/airflow/data/tmp_air4thai.json', 'r', encoding='utf-8') as f:
             raw_data = json.load(f)
 
-        aqi = raw_data['AQILast']
-        date_str = aqi['date']
-        time_str = aqi['time']
+        aqi_data_obj = raw_data['AQILast']
+        date_str = aqi_data_obj['date']
+        time_str = aqi_data_obj['time']
         date_time_str = f"{date_str} {time_str}"
         date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
 
@@ -137,7 +140,8 @@ def load_air4thai_to_postgres():
             WHERE description = %s;
         """, (description,))
         result = cursor.fetchone()
-        print(f"fecth cursor result find location id: {result}")
+        logging.info(f"fecth cursor result find location id: {result}")
+
         if result:
             location_id = result[1]
         else:
@@ -149,7 +153,7 @@ def load_air4thai_to_postgres():
             location_id = cursor.fetchone()[0]
 
         # --- Step 3: Insert into dimMainPollutionTable (if not exists) ---
-        main_code = aqi['AQI']['param']
+        main_code = aqi_data_obj['AQI']['param']
         if main_code not in pollution_mapping:
             logging.warning(f"Pollution code '{main_code}' not found in mapping file.")
         mapping = pollution_mapping.get(main_code, {"unit": "unknown", "name_pollution": main_code})
@@ -179,13 +183,13 @@ def load_air4thai_to_postgres():
             date_time_obj,
             location_id,
             main_code,
-            clean_float(aqi['AQI']['aqi']),
-            clean_float(aqi['PM25']['value']),
-            clean_float(aqi['PM10']['value']),
-            clean_float(aqi['O3']['value']),
-            clean_float(aqi['CO']['value']),
-            clean_float(aqi['NO2']['value']),
-            clean_float(aqi['SO2']['value']),
+            clean_float(aqi_data_obj['AQI']['aqi']),
+            clean_float(aqi_data_obj['PM25']['value']),
+            clean_float(aqi_data_obj['PM10']['value']),
+            clean_float(aqi_data_obj['O3']['value']),
+            clean_float(aqi_data_obj['CO']['value']),
+            clean_float(aqi_data_obj['NO2']['value']),
+            clean_float(aqi_data_obj['SO2']['value']),
         ))
 
         conn.commit()
@@ -210,7 +214,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='air4thai_pipeline_v1_20',
+    dag_id='air4thai_pipeline_v1_21',
     schedule_interval='30 * * * *',
     default_args=default_args,
     catchup=False,
@@ -220,7 +224,7 @@ with DAG(
     t1 = PythonOperator(
         task_id='get_air4thai_data_hourly',
         python_callable=get_data_from_air4thai,
-        retries=3,
+        retries=2,
         retry_delay=timedelta(minutes=5),
     )
 

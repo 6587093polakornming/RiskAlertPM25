@@ -1,8 +1,9 @@
 import json
 import requests
 import logging
-from datetime import datetime, timedelta
 from pathlib import Path
+from datetime import datetime, timedelta
+import configparser
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -10,13 +11,19 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.exceptions import AirflowSkipException
 
-# ================= CONFIG ===================
-AIR4THAI_URL = "http://air4thai.pcd.go.th/services/getNewAQI_JSON.php?stationID=81t"
-OUTPUT_DIR = Path("/opt/airflow/data")
+# ============ CONFIG ============ #
+BASE_DIR = Path(__file__).resolve().parent.parent
+CONFIG_PATH = BASE_DIR / "config" / "config.conf"
+OUTPUT_DIR = BASE_DIR / "data"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-OUTPUT_FILE = OUTPUT_DIR / "tmp_air4thai.json"
+OUTPUT_FILE = OUTPUT_DIR / "tmp_airvisual.json"
+CITY = "Salaya"
+STATE = "Nakhon Pathom"
+COUNTRY = "Thailand"
+LATITUDE = 13.79059242
+LONGITUDE = 100.32622308
 
-# ================= FUNCTION =================
+# ============ FUNCTIONS ============ #
 def get_cursor():
     hook = PostgresHook(postgres_conn_id="postgres_conn")
     conn = hook.get_conn()
@@ -26,7 +33,7 @@ def is_data_in_db(date_time_str):
     conn, cursor = get_cursor()
     try:
         cursor.execute("""
-            SELECT 1 FROM factAir4thaiTable
+            SELECT 1 FROM factairvisualtable
             WHERE date_time = %s
             LIMIT 1
         """, (date_time_str,))
@@ -35,20 +42,35 @@ def is_data_in_db(date_time_str):
         cursor.close()
         conn.close()
 
-def get_data_from_air4thai():
-    logging.info("Sending request to AIR4THAI API...")
+def get_data_from_airvisual():
+    config = configparser.ConfigParser()
+    config.read(CONFIG_PATH)
+
+    api_key = config.get("api", "airvisual_key")
+
+    # URL = (
+    #     "http://api.airvisual.com/v2/city"
+    #     f"?city={CITY}&state={STATE}&country={COUNTRY}&key={api_key}"
+    # )
+    URL = (
+        "http://api.airvisual.com/v2/nearest_city"
+        f"?lat={LATITUDE}&lon={LONGITUDE}&key={api_key}"
+    )
+
+    logging.info(f"Requesting data from: {URL}")
     try:
-        response = requests.get(AIR4THAI_URL, timeout=10)
+        response = requests.get(URL, timeout=10)
         response.raise_for_status()
-        json_data = response.json()
+        data = response.json()
 
         # ตรวจสอบ datetime ของข้อมูลล่าสุด
-        date_str = json_data["AQILast"]["date"]
-        time_str = json_data["AQILast"]["time"]
-        current_dt_str = f"{date_str} {time_str}"
+        ts_str = data["data"]["current"]["pollution"]["ts"]
+        ts_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        ts_bangkok = ts_obj + timedelta(hours=7)
+        current_dt_str = ts_bangkok.strftime("%Y-%m-%d %H:%M")
 
         # เชื่อมต่อ Database แล้วตรวจสอบว่า datetime นี้มีอยู่แล้วหรือไม่
-        data_time_now_obj = datetime.now()+ timedelta(hours=7) # UTC +7 but schedule every XX:30 
+        data_time_now_obj = datetime.now()+ timedelta(hours=7)
         data_time_now_str = data_time_now_obj.strftime("%Y-%m-%d %H:00") 
         if is_data_in_db(data_time_now_str):
             raise AirflowSkipException(f"Data for {data_time_now_str} already exists in DB. Skipping DAG.")
@@ -57,56 +79,58 @@ def get_data_from_air4thai():
         if OUTPUT_FILE.exists():
             with open(OUTPUT_FILE, "r", encoding="utf-8") as f_check:
                 prev_data = json.load(f_check)
-            prev_date = prev_data["AQILast"]["date"]
-            prev_time = prev_data["AQILast"]["time"]
-            prev_dt_str = f"{prev_date} {prev_time}"
-
-            #เช็คว่าไฟล์ JSON ล่าสุด ตรวจสอบว่า datetime นี้มีอยู่แล้วหรือไม่ใน DB
+            prev_dt_str = prev_data["data"]["current"]["pollution"]["ts"]
+            prev_dt_obj = datetime.strptime(prev_dt_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+            prev_dt_obj = prev_dt_obj + timedelta(hours=7)
+            prev_dt_str = prev_dt_obj.strftime("%Y-%m-%d %H:%M")
             if current_dt_str == prev_dt_str and is_data_in_db(prev_dt_str):
                 raise Exception(f"Data has not been updated yet: {current_dt_str} == {prev_dt_str}")
 
         # ใช้หลักการ "Atomic File Write":
         # เขียนลงไฟล์ชั่วคราว (.tmp) แล้วค่อย rename เป็นไฟล์จริง
-        # เพื่อป้องกันปัญหาการอ่านไฟล์ไม่สมบูรณ์ใน Task ถัดไป
+        # เพื่อป้องกันปัญaหาการอ่านไฟล์ไม่สมบูรณ์ใน Task ถัดไป
         tmp_path = Path(str(OUTPUT_FILE) + ".tmp")
         with open(tmp_path, "w", encoding="utf-8") as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=2)
-        
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
         tmp_path.rename(OUTPUT_FILE)
-        logging.info("Response saved successfully.")
+        logging.info("Data saved successfully.")
 
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching data from AIR4THAI: {e}")
+        logging.error(f"Request failed: {e}")
         raise
 
 def read_json_data():
     try:
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-        logging.info("Read JSON data successfully.")
-        # Optional: validate or transform data here
+        logging.info("Read JSON file successfully.")
+        # Optional: Validate or transform data
     except Exception as e:
         logging.error(f"Error reading JSON file: {e}")
         raise
 
-def load_air4thai_to_postgres():
-    logging.info("Starting load_air4thai_to_postgres")
-    conn, cursor = get_cursor()
-
+def load_airvisual_to_postgres():
+    
+    conn ,cursor = get_cursor() 
     try:
         # Load pollution mapping from config
         with open('/opt/airflow/config/mapping_main_pollution.json', 'r', encoding='utf-8') as mf:
             pollution_mapping = json.load(mf)
 
-        # Load raw JSON data
-        with open('/opt/airflow/data/tmp_air4thai.json', 'r', encoding='utf-8') as f:
-            raw_data = json.load(f)
+        # Load Weather code data
+        with open('/opt/airflow/config/mapping_weather_code.json', 'r', encoding='utf-8') as wf:
+            weather_mapping = json.load(wf)
 
-        aqi = raw_data['AQILast']
-        date_str = aqi['date']
-        time_str = aqi['time']
-        date_time_str = f"{date_str} {time_str}"
-        date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
+        # Load raw JSON data
+        with open('/opt/airflow/data/tmp_airvisual.json', 'r', encoding='utf-8') as f:
+            raw_data = json.load(f)
+        
+        date_time_str = raw_data["data"]["current"]["pollution"]["ts"]
+        date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        date_time_obj_bangkok = date_time_obj + timedelta(hours=7)
+        date_str = date_time_obj_bangkok.strftime("%Y-%m-%d")
+        time_str = date_time_obj_bangkok.strftime("%H:%M")
 
         # --- Step 1: Insert into dimDateTimeTable (if not exists) ---
         cursor.execute("""
@@ -114,23 +138,23 @@ def load_air4thai_to_postgres():
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (date_time) DO NOTHING;
         """, (
-            date_time_obj,
+            date_time_obj_bangkok, 
             date_str,
             time_str,
-            date_time_obj.day,
-            date_time_obj.month,
-            date_time_obj.year,
-            date_time_obj.hour
+            date_time_obj_bangkok.day,
+            date_time_obj_bangkok.month,
+            date_time_obj_bangkok.year,
+            date_time_obj_bangkok.hour
         ))
 
         # --- Step 2: Insert into dimLocationTable (if not exists) ---
-        latitude = float(raw_data['lat'])
-        longitude = float(raw_data['long'])
-        description = raw_data.get('nameEN')
-        country = "Thailand"
-        area_parts = raw_data.get('areaEN', '').split(",")
-        city = area_parts[0].strip() if len(area_parts) > 0 else None
-        state = area_parts[1].strip() if len(area_parts) > 1 else None
+        contents_data: dict = raw_data["data"]
+        latitude = round(float(contents_data["location"]["coordinates"][1]), 6)
+        longitude = round(float(contents_data["location"]["coordinates"][0]), 6)
+        country = contents_data["country"]
+        state = contents_data["state"]
+        city = contents_data["city"]
+        description = f"{city} {state} {country}"
 
         cursor.execute("""
             SELECT description, location_id FROM dimLocationTable
@@ -141,15 +165,15 @@ def load_air4thai_to_postgres():
         if result:
             location_id = result[1]
         else:
-            cursor.execute("""
+            cursor.execute(""" 
                 INSERT INTO dimLocationTable (latitude, longitude, description, country, state, city)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 RETURNING location_id;
             """, (latitude, longitude, description, country, state, city))
             location_id = cursor.fetchone()[0]
 
-        # --- Step 3: Insert into dimMainPollutionTable (if not exists) ---
-        main_code = aqi['AQI']['param']
+         # --- Step 3: Insert into dimMainPollutionTable (if not exists) ---
+        main_code = raw_data["data"]["current"]["pollution"]["mainus"]
         if main_code not in pollution_mapping:
             logging.warning(f"Pollution code '{main_code}' not found in mapping file.")
         mapping = pollution_mapping.get(main_code, {"unit": "unknown", "name_pollution": main_code})
@@ -159,37 +183,37 @@ def load_air4thai_to_postgres():
             ON CONFLICT (main_pollution_code) DO NOTHING;
         """, (main_code, mapping['unit'], mapping['name_pollution']))
 
-        # --- Step 4: Insert into factAir4thaiTable ---
-        def clean_float(val):
-            try:
-                fval = float(val)
-                return fval if fval >= 0 else None
-            except:
-                return None
-
+        # --- Step 4: Insert into factAirVisualTable ---
+        weather_data: dict = contents_data.get("current").get("weather")
+        weather_code = weather_data.get("ic")
+        if weather_code not in weather_mapping:
+            logging.warning(f"weather code '{weather_code}' not found in mapping file.")
+        wmapping: dict = weather_mapping.get(weather_code)
+        weather_name = wmapping.get("name") if wmapping else None
+        
         cursor.execute("""
-            INSERT INTO factAir4thaiTable (
+            INSERT INTO factairvisualtable (
                 date_time, location_id, main_pollution_code,
-                AQI, PM25_value, PM10_value, O3_value,
-                CO_value, NO2_value, SO2_value
+                aqi_us, temperature_c, pressure,
+                humidity, wind_speed, wind_direction, weather_text
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
             ON CONFLICT (date_time, location_id, main_pollution_code) DO NOTHING;
-        """, (
-            date_time_obj,
+        """,(
+            date_time_obj_bangkok,
             location_id,
             main_code,
-            clean_float(aqi['AQI']['aqi']),
-            clean_float(aqi['PM25']['value']),
-            clean_float(aqi['PM10']['value']),
-            clean_float(aqi['O3']['value']),
-            clean_float(aqi['CO']['value']),
-            clean_float(aqi['NO2']['value']),
-            clean_float(aqi['SO2']['value']),
+            contents_data["current"]["pollution"]["aqius"],
+            weather_data.get("tp"),
+            weather_data.get("pr"),
+            weather_data.get("hu"),
+            weather_data.get("ws"),
+            weather_data.get("wd"),
+            weather_name
         ))
 
         conn.commit()
-        logging.info("Finished load_air4thai_to_postgres")
+        logging.info("Finished load_airvisual_to_postgres")
 
     except Exception as e:
         conn.rollback()
@@ -201,37 +225,38 @@ def load_air4thai_to_postgres():
         conn.close()
         logging.info("ETL to PostgreSQL Completed")
 
-# ================= DAG ======================
+
+# ============ DAG ============ #
 default_args = {
     'owner': 'Polakorn Anantapakorn Ming',
-    'start_date': datetime(2025, 3, 20), # 'start_date': get_start_date(),
+    'start_date': datetime(2025, 3, 20),
     'retries': 2,
     'retry_delay': timedelta(minutes=3),
 }
 
 with DAG(
-    dag_id='air4thai_pipeline_v1_20',
-    schedule_interval='30 * * * *',
+    dag_id='airvisual_pipeline_lat_long_v1',
+    schedule_interval=None,
     default_args=default_args,
+    description='A simple data pipeline for airvisual API by lat long',
     catchup=False,
-    description='A simple data pipeline for air4thai API',
 ) as dag:
 
     t1 = PythonOperator(
-        task_id='get_air4thai_data_hourly',
-        python_callable=get_data_from_air4thai,
-        retries=3,
-        retry_delay=timedelta(minutes=5),
+        task_id='get_airvisual_data_hourly',
+        python_callable=get_data_from_airvisual,
+        retries= 2,
+        retry_delay=timedelta(minutes=5)
     )
 
     t2 = PythonOperator(
-        task_id='read_data_air4thai',
+        task_id='read_data_airvisual',
         python_callable=read_json_data
     )
 
     t3 = PythonOperator(
-        task_id='load_data_air4thai_to_postgresql',
-        python_callable=load_air4thai_to_postgres
+        task_id='load_data_airvisual_to_postgresql',
+        python_callable=load_airvisual_to_postgres
     )
 
     t1 >> t2 >> t3

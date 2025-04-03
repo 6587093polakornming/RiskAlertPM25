@@ -160,7 +160,7 @@ data = {
         }
 
 if __name__ == "__main__":
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     # print(data)
     # get_data_from_airvisual()
 
@@ -181,26 +181,69 @@ if __name__ == "__main__":
 
 
     # =============
-    data = {
-        "Datetime": "2025-03-30T22:00:00",
-        "Air Quality": "Satisfactory",
-        "Main Pollution": "PM2.5",
-        "AQI": "42",
-        "PM25": "16",
-        "PM10": "25",
-        "O3": "16.7",
-        "CO": "0.1",
-        "NO2": "6.4",
-        "SO2": "0.03",
-        "Temperature": "30",
-        "Humidity": "72",
-        "Wind Speed": "1.6",
-        "Wind Direction": "141",
-        "Rainfall": "0",
-        "Solar Radiation": "755"
-    }
-    date_time_str = data["Datetime"]
-    date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%S")
-    print(date_time_obj)
-    print(date_time_obj.strftime("%Y-%m-%d"))
-    print(date_time_obj.strftime("%H:%M:%S"))
+    # data = {
+    # "status": "success",
+    # "data": {
+    #     "city": "Salaya",
+    #     "state": "Nakhon Pathom",
+    #     "country": "Thailand",
+    #     "location": {
+    #     "type": "Point",
+    #     "coordinates": [
+    #         100.32622308,
+    #         13.79059242
+    #     ]
+    #     },
+    #     "current": {
+    #     "pollution": {
+    #         "ts": "2025-04-01T07:00:00.000Z",
+    #         "aqius": 143,
+    #         "mainus": "p2",
+    #         "aqicn": 72,
+    #         "maincn": "p2"
+    #     },
+    #     "weather": {
+    #         "ts": "2025-04-01T06:00:00.000Z",
+    #         "tp": 35,
+    #         "pr": 1008,
+    #         "hu": 47,
+    #         "ws": 3.33,
+    #         "wd": 164,
+    #         "ic": "04d"
+    #     }
+    #     }
+    # }
+    # }
+    # def parse_utc_to_bangkok(ts_str):
+    #     return datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(hours=7)
+
+    # pollution_ts = data["data"]["current"]["pollution"]["ts"]
+    # weather_ts = data["data"]["current"]["weather"]["ts"]
+
+    # w_prev_dt_str ="2025-04-01T06:00:00.000Z"
+    # prev_dt_str = "2025-04-01T06:00:00.000Z"
+
+    # # Flow Conditions
+    # if weather_ts == pollution_ts:
+    #     date_time_obj = parse_utc_to_bangkok(pollution_ts)
+    #     state_flow = 1
+    #     print("flow state1")
+    # elif weather_ts != pollution_ts and weather_ts != w_prev_dt_str and pollution_ts == prev_dt_str:
+    #     date_time_obj = parse_utc_to_bangkok(weather_ts)
+    #     state_flow = 2
+    #     print("flow state2")
+    # elif weather_ts != pollution_ts and weather_ts == w_prev_dt_str and pollution_ts != prev_dt_str:
+    #     date_time_obj = parse_utc_to_bangkok(pollution_ts)
+    #     state_flow = 3
+    #     print("flow state3")
+    # else:
+    #     state_flow = 4
+    #     print("Unrecognized data flow state.")
+
+
+    # original_dt = datetime.now()  # หรือ datetime ที่คุณได้มาแบบ datetime object โดยตรง
+    # dt_floor_hour = original_dt.replace(minute=0, second=0, microsecond=0)  # ปัดลงให้เป็นต้นชั่วโมง
+    # iso_format_str = dt_floor_hour.isoformat() + ".000Z" # แปลงเป็น ISO format + .000Z
+    # print(iso_format_str)
+    iso_format_str = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:00:00.000Z")
+    print(iso_format_str)

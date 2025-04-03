@@ -1,9 +1,10 @@
 import json
 import requests
 import logging
+import configparser
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
-import configparser
+from enum import Enum
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -18,13 +19,10 @@ CONFIG_PATH = BASE_DIR / "config" / "config.conf"
 OUTPUT_DIR = BASE_DIR / "data"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_FILE = OUTPUT_DIR / "tmp_airvisual.json"
+
 CITY = "Salaya"
 STATE = "Nakhon Pathom"
 COUNTRY = "Thailand"
-
-
-from enum import Enum
-
 class StateFlow(Enum):
     RESET = 0
     NORMAL = 1
@@ -70,29 +68,28 @@ def get_dt_str_ts_bangkok(ts_str: str):
         return current_dt_str
     except:
         return None
-
+    
+# --- ====== TASK 1 ====== ---
 def get_data_from_airvisual(ti=None):
     config = configparser.ConfigParser()
     config.read(CONFIG_PATH)
-
     api_key = config.get("api", "airvisual_key")
-
     URL = (
         "http://api.airvisual.com/v2/city"
         f"?city={CITY}&state={STATE}&country={COUNTRY}&key={api_key}"
     )
-
     logging.info(f"Requesting data from: {URL}")
+    
     try:
         response = requests.get(URL, timeout=10)
         response.raise_for_status()
         data = response.json()
 
         # ตรวจสอบ datetime ของข้อมูลล่าสุด
-        ts_str = data["data"]["current"]["pollution"]["ts"]
-        w_ts_str = data["data"]["current"]["weather"]["ts"]
-        current_dt_str = get_dt_str_ts_bangkok(ts_str)
-        w_current_dt_str = get_dt_str_ts_bangkok(w_ts_str)
+        pollution_ts_str = data["data"]["current"]["pollution"]["ts"] # FORMAT eg. "2025-04-02T14:00:00.000Z" UTC = 0
+        weather_ts_str = data["data"]["current"]["weather"]["ts"]
+        current_pollution_dt_str = get_dt_str_ts_bangkok(pollution_ts_str)
+        current_weather_dt_str = get_dt_str_ts_bangkok(weather_ts_str)
 
         # เชื่อมต่อ Database แล้วตรวจสอบว่า datetime นี้มีอยู่แล้วหรือไม่
         data_time_now_obj = datetime.now()+ timedelta(hours=7)
@@ -104,18 +101,26 @@ def get_data_from_airvisual(ti=None):
         if OUTPUT_FILE.exists():
             with open(OUTPUT_FILE, "r", encoding="utf-8") as f_check:
                 prev_data = json.load(f_check)
-            prev_dt_str = prev_data["data"]["current"]["pollution"]["ts"]
-            w_prev_dt_str = prev_data["data"]["current"]["weather"]["ts"]
-            ti.xcom_push(key='prev_dt_str', value=prev_dt_str)
-            ti.xcom_push(key='w_prev_dt_str', value=w_prev_dt_str)
+            
+            #FORMAT "2025-04-02T14:00:00.000Z" (UTC = 0)
+            prev_pollution_dt_str = prev_data["data"]["current"]["pollution"]["ts"] 
+            prev_weather_dt_str = prev_data["data"]["current"]["weather"]["ts"]
+            ti.xcom_push(key='prev_pollution_dt_str', value=prev_pollution_dt_str) 
+            ti.xcom_push(key='prev_weather_dt_str', value=prev_weather_dt_str)
 
-            prev_dt_str = get_dt_str_ts_bangkok(prev_dt_str) 
-            w_prev_dt_str = get_dt_str_ts_bangkok(w_prev_dt_str)
-            if current_dt_str == prev_dt_str \
-                and w_current_dt_str == w_prev_dt_str  \
-                and is_data_in_db(prev_dt_str) \
-                and is_data_in_db(w_prev_dt_str):
-                raise Exception(f"Data has not been updated yet: {current_dt_str} == {prev_dt_str}")
+            # FORMAT Change Warning ! eg. 2025-04-02 20:00  (UTC = +7)
+            prev_pollution_dt_str = get_dt_str_ts_bangkok(prev_pollution_dt_str) 
+            prev_weather_dt_str = get_dt_str_ts_bangkok(prev_weather_dt_str)
+
+            # If datetime equal so it's not updated
+            is_pollution_not_updated =  current_pollution_dt_str == prev_pollution_dt_str
+            is_weather_not_updated = current_weather_dt_str == prev_weather_dt_str
+
+            if is_pollution_not_updated \
+                and is_weather_not_updated  \
+                and is_data_in_db(prev_pollution_dt_str) \
+                and is_data_in_db(prev_weather_dt_str):
+                raise Exception(f"Data has not been updated yet: {current_pollution_dt_str} == {prev_pollution_dt_str}")
             
         if not OUTPUT_FILE.exists():
             ti.xcom_push(key='prev_dt_str', value=None)
@@ -133,21 +138,25 @@ def get_data_from_airvisual(ti=None):
         logging.error(f"Request failed: {e}")
         raise
 
+# --- ====== TASK 2 ====== ---
 def read_json_data(ti=None):
     try:
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
+        logging.info("Extracted data: %s", data)
         logging.info("Read JSON file successfully.")
-        # Optional: Validate or transform data
     except Exception as e:
         logging.error(f"Error reading JSON file: {e}")
         raise
 
+# --- ====== TASK 3 ====== ---
 def load_airvisual_to_postgres(ti=None):
-    def parse_utc_to_bangkok(ts_str):
+    def parse_to_dt_bangkok(ts_str):
         return datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(hours=7)
+    
     conn, cursor = get_cursor()
     state_flow = StateFlow.RESET  # 0: reset, 1: Normal, 2: Only weather, 3: Only pollution, 4: error
+
     try:
         # Load mapping files
         with open('/opt/airflow/config/mapping_main_pollution.json', 'r', encoding='utf-8') as mf:
@@ -161,57 +170,59 @@ def load_airvisual_to_postgres(ti=None):
             raw_data = json.load(f)
 
         contents_data = raw_data["data"]
-        pollution_ts = contents_data["current"]["pollution"]["ts"]
-        weather_ts = contents_data["current"]["weather"]["ts"]
+        pollution_ts_str = contents_data["current"]["pollution"]["ts"]
+        weather_ts_str = contents_data["current"]["weather"]["ts"]
 
         # ดึงข้อมูล previous
-        prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='prev_dt_str')
-        w_prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='w_prev_dt_str')
-        is_first_run = not prev_dt_str or not w_prev_dt_str
+        prev_pollution_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='prev_pollution_dt_str')
+        prev_weather_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='prev_weather_dt_str')
+        is_first_run = not prev_pollution_dt_str or not prev_weather_dt_str
 
         # ISO datetime ปัจจุบันในรูปแบบ UTC
-        iso_format_str = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:00:00.000Z")
+        iso_format_str = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:00:00.000Z") 
         logging.info(f"current datetime iso format: {iso_format_str}")
-        logging.info(f"weather_ts: {weather_ts} | pollution_ts: {pollution_ts}")
-        logging.info(f"prev_dt_str: {prev_dt_str} | w_prev_dt_str: {w_prev_dt_str}")
+        logging.info(f"weather_ts: {weather_ts_str} | pollution_ts: {pollution_ts_str}")
+        logging.info(f"prev_dt_str: {prev_pollution_dt_str} | w_prev_dt_str: {prev_weather_dt_str}")
 
         date_time_obj = None
-        if weather_ts == pollution_ts and pollution_ts == iso_format_str:
-            date_time_obj = parse_utc_to_bangkok(pollution_ts)
+        # ======= Flow Condition ======= #
+        if weather_ts_str == pollution_ts_str and pollution_ts_str == iso_format_str:
+            date_time_obj = parse_to_dt_bangkok(pollution_ts_str)
             state_flow = StateFlow.NORMAL
             logging.info("flow state1: both timestamps are the same")
-        elif not is_first_run:
-            weather_updated = weather_ts != w_prev_dt_str
-            pollution_updated = pollution_ts != prev_dt_str
 
+        elif not is_first_run:
+            weather_updated = weather_ts_str != prev_weather_dt_str
+            pollution_updated = pollution_ts_str != prev_pollution_dt_str
             if weather_updated and not pollution_updated:
-                date_time_obj = parse_utc_to_bangkok(weather_ts)
+                date_time_obj = parse_to_dt_bangkok(weather_ts_str)
                 state_flow = StateFlow.ONLY_WEATHER
                 logging.info("flow state2: only weather updated")
             elif not weather_updated and pollution_updated:
-                date_time_obj = parse_utc_to_bangkok(pollution_ts)
+                date_time_obj = parse_to_dt_bangkok(pollution_ts_str)
                 state_flow = StateFlow.ONLY_POLLUTION
                 logging.info("flow state3: only pollution updated")
             else:
                 state_flow = StateFlow.ERROR
                 logging.warning("flow error: unrecognized pattern (non-first run)")
+
         else: # First RUN
-            if weather_ts == iso_format_str:
-                date_time_obj = parse_utc_to_bangkok(weather_ts)
+            if weather_ts_str == iso_format_str:
+                date_time_obj = parse_to_dt_bangkok(weather_ts_str)
                 state_flow = StateFlow.ONLY_WEATHER
                 logging.info("flow state2: first run, only weather matches current time")
-            elif pollution_ts == iso_format_str:
-                date_time_obj = parse_utc_to_bangkok(pollution_ts)
+            elif pollution_ts_str == iso_format_str:
+                date_time_obj = parse_to_dt_bangkok(pollution_ts_str)
                 state_flow = StateFlow.ONLY_POLLUTION
                 logging.info("flow state3: first run, only pollution matches current time")
             else:
                 state_flow = StateFlow.ERROR
                 logging.warning("flow error: unrecognized pattern (first run)")
+        # ============================== #
 
         if date_time_obj:
-            date_time_obj_bangkok = date_time_obj
-            date_str = date_time_obj_bangkok.strftime("%Y-%m-%d")
-            time_str = date_time_obj_bangkok.strftime("%H:%M")
+            date_str = date_time_obj.strftime("%Y-%m-%d")
+            time_str = date_time_obj.strftime("%H:%M")
 
         # Insert dimDateTimeTable
         cursor.execute("""
@@ -219,9 +230,9 @@ def load_airvisual_to_postgres(ti=None):
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (date_time) DO NOTHING;
         """, (
-            date_time_obj_bangkok, date_str, time_str,
-            date_time_obj_bangkok.day, date_time_obj_bangkok.month,
-            date_time_obj_bangkok.year, date_time_obj_bangkok.hour
+            date_time_obj, date_str, time_str,
+            date_time_obj.day, date_time_obj.month,
+            date_time_obj.year, date_time_obj.hour
         ))
 
         # Insert dimLocationTable
@@ -275,7 +286,7 @@ def load_airvisual_to_postgres(ti=None):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (date_time, location_id, main_pollution_code) DO NOTHING;
         """, (
-            date_time_obj_bangkok,
+            date_time_obj,
             location_id,
             main_code if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_POLLUTION) else "PM2.5",
             contents_data["current"]["pollution"]["aqius"] if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_POLLUTION) else None,
@@ -286,7 +297,6 @@ def load_airvisual_to_postgres(ti=None):
             weather_data.get("wd") if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None,
             weather_name if state_flow in (StateFlow.NORMAL, StateFlow.ONLY_WEATHER) else None
         ))
-
         conn.commit()
         logging.info("Finished load_airvisual_to_postgres")
 
@@ -309,7 +319,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='airvisual_pipeline_v1_23',
+    dag_id='airvisual_pipeline_v1_24',
     schedule_interval='30 * * * *',
     default_args=default_args,
     description='A simple data pipeline for airvisual API',

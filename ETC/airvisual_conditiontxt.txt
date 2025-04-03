@@ -1,0 +1,48 @@
+prev_dt_str, w_prev_dt_str = None, None
+        prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='prev_dt_str')
+        w_prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='w_prev_dt_str')
+
+        #Get Current Time
+        original_dt = datetime.now()  # หรือ datetime ที่คุณได้มาแบบ datetime object โดยตรง
+        dt_floor_hour = original_dt.replace(minute=0, second=0, microsecond=0)  # ปัดลงให้เป็นต้นชั่วโมง
+        iso_format_str = dt_floor_hour.isoformat() + ".000Z" # แปลงเป็น ISO format + .000Z
+        logging.info("current datetime iso format:",iso_format_str)
+
+        # Flow Conditions
+        date_time_obj, date_time_obj_bangkok = None, None
+        date_str, time_str = None, None
+
+        logging.info(f"weather_ts: {weather_ts} pollution_ts: {pollution_ts}")
+        logging.info(f"w_prev_dt_st: {w_prev_dt_str} prev_dt_str: {prev_dt_str}")
+        if prev_dt_str is not None and w_prev_dt_str is not None:
+            if (weather_ts == pollution_ts):
+                date_time_obj = parse_utc_to_bangkok(pollution_ts)
+                state_flow = StateFlow.NORMAL
+                logging.info("flow state1")
+            elif weather_ts != pollution_ts and weather_ts != w_prev_dt_str and pollution_ts == prev_dt_str:
+                date_time_obj = parse_utc_to_bangkok(weather_ts)
+                state_flow = StateFlow.ONLY_WEATHER
+                logging.info("flow state2")
+            elif weather_ts != pollution_ts and weather_ts == w_prev_dt_str and pollution_ts != prev_dt_str:
+                date_time_obj = parse_utc_to_bangkok(pollution_ts)
+                state_flow = StateFlow.ONLY_POLLUTION
+                logging.info("flow state3")
+            else:
+                state_flow = StateFlow.ERROR
+                logging.warning("Unrecognized data flow state.")
+        else:
+            if (weather_ts == pollution_ts):
+                date_time_obj = parse_utc_to_bangkok(pollution_ts)
+                state_flow = StateFlow.NORMAL
+                logging.info("flow state1")
+            elif weather_ts != pollution_ts and weather_ts == iso_format_str:
+                date_time_obj = parse_utc_to_bangkok(weather_ts)
+                state_flow = StateFlow.ONLY_WEATHER
+                logging.info("flow state2")
+            elif weather_ts != pollution_ts and pollution_ts == iso_format_str:
+                date_time_obj = parse_utc_to_bangkok(pollution_ts)
+                state_flow = StateFlow.ONLY_POLLUTION
+                logging.info("flow state3")
+            else:
+                state_flow = StateFlow.ERROR
+                logging.warning("Unrecognized data flow state.")
