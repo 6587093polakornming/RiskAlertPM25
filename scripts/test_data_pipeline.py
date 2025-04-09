@@ -1,7 +1,6 @@
 import json
 from datetime import datetime, date
 
-
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -14,7 +13,7 @@ def get_posts_report_today():
     url = 'https://jsonplaceholder.typicode.com/posts'
     response = requests.get(url)
     data = response.json()
-    with open('data.json', 'w') as f:
+    with open('data/data.json', 'w') as f:
         json.dump(data, f)
 
     return data
@@ -50,10 +49,10 @@ def remove_before_into_db():
     postgres_hook.run(delete)
 
 default_args = {
-    'owner': 'Polakorn Anantapakorn',
-    'start_date': datetime(2025, 3, 19),
+    'owner': 'Polakorn Anantapakorn Ming',
+    'start_date': datetime(2025, 3, 26),
 }
-with DAG('test_data_pipeline',
+with DAG('test_data_pipeline_v4',
          schedule_interval='@daily',
          default_args=default_args,
          description='A simple data pipeline for testing',
@@ -64,15 +63,15 @@ with DAG('test_data_pipeline',
         python_callable=get_posts_report_today
     )
 
-    t2 = PythonOperator(
-        task_id='save_data_into_db',
-        python_callable=save_data_into_db
-    )
+    # t2 = PythonOperator(
+    #     task_id='save_data_into_db',
+    #     python_callable=save_data_into_db
+    # )
 
-    t3 = PythonOperator(
-        task_id='remove_before_into_db',
-        python_callable=remove_before_into_db
-    )
+    # t3 = PythonOperator(
+    #     task_id='remove_before_into_db',
+    #     python_callable=remove_before_into_db
+    # )
 
 
-    t3 >> t1 >>  t2
+    t1

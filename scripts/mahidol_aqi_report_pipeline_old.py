@@ -18,13 +18,6 @@ HTML_FILE = DATA_DIR / "mahidol_aqi.html"
 OUTPUT_FILE = DATA_DIR / "tmp_mahidol.json"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-LATITUDE = 13.794606
-LONGITUDE = 100.327256
-DESCRIPTION = "คณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล"
-COUNTRY = "Thailand"
-STATE = "Nakhon Pathom"
-CITY = "Salaya"
-
 # ============ FUNCTIONS ============ #
 def get_cursor():
     hook = PostgresHook(postgres_conn_id="postgres_conn")
@@ -53,9 +46,9 @@ def get_data_mahidol_aqi_report():
         tmp_path = Path(str(HTML_FILE) + ".tmp")
         with open(tmp_path, 'w', encoding='utf-8') as f:
             f.write(res.text)
+        
         tmp_path.rename(HTML_FILE)
         logging.info("Saved Mahidol AQI HTML successfully.")
-
     except Exception as e:
         logging.error(f"Failed to fetch Mahidol AQI report: {e}")
         raise
@@ -123,8 +116,12 @@ def create_json_object():
         }
         logging.info("Extracted data: %s", data)
 
+        #ดัก O3 main pollution HTML !!!
+        # if data["Main Pollution"] == "O3":
+        #     HTML_FILE.rename(DATA_DIR / "mahidol_aqi_main_o3_detech.html")
+
         # ตรวจสอบ datetime ของข้อมูลล่าสุด
-        iso_string = data["Datetime"] #FORMAT eg. "2025-04-02T21:00:00"
+        iso_string = data["Datetime"]
         if iso_string:
             dt_obj = datetime.strptime(iso_string, "%Y-%m-%dT%H:%M:%S")
             current_dt_str = dt_obj.strftime("%Y-%m-%d %H:%M")
@@ -137,7 +134,7 @@ def create_json_object():
         if is_data_in_db(data_time_now_str):
             raise AirflowSkipException(f"Data for {data_time_now_str} already exists in DB. Skipping DAG.")
 
-        # โหลด datetime ปัจจุบันจากไฟล์ JSON ที่มีอยู่แล้ว ตรวจสอบว่าข้อมูลต้นทางอัปเดตหรือยัง
+        # โหลด datetime ปัจจุบันจากไฟล์ JSON ที่มีอยู่แล้ว
         if OUTPUT_FILE.exists():
             with open(OUTPUT_FILE, "r", encoding="utf-8") as f_check:
                 prev_data = json.load(f_check)
@@ -174,6 +171,7 @@ def load_mahidol_aqi_to_postgres():
         with open('/opt/airflow/data/tmp_mahidol.json', 'r', encoding='utf-8') as f:
             raw_data: dict = json.load(f)
 
+        # VARs
         date_time_str = raw_data["Datetime"]
         date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%S")
         date_str = date_time_obj.strftime("%Y-%m-%d")
@@ -195,10 +193,17 @@ def load_mahidol_aqi_to_postgres():
         ))
 
         # --- Step 2: Insert into dimLocationTable (if not exists) ---
+        latitude = 13.794606
+        longitude = 100.327256
+        description = "คณะสิ่งแวดล้อมและทรัพยากรศาสตร์ มหาวิทยาลัยมหิดล"
+        country = "Thailand"
+        state = "Nakhon Pathom"
+        city = "Salaya"
+
         cursor.execute("""
             SELECT description, location_id FROM dimLocationTable
             WHERE description = %s;
-        """, (DESCRIPTION,))
+        """, (description,))
         result = cursor.fetchone()
         print(f"fecth cursor result find location id: {result}")
         if result:
@@ -208,7 +213,7 @@ def load_mahidol_aqi_to_postgres():
                 INSERT INTO dimLocationTable (latitude, longitude, description, country, state, city)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 RETURNING location_id;
-            """, (LATITUDE, LONGITUDE, DESCRIPTION, COUNTRY, STATE, CITY))
+            """, (latitude, longitude, description, country, state, city))
             location_id = cursor.fetchone()[0]
 
         # --- Step 3: Insert into dimMainPollutionTable (if not exists) ---
@@ -225,7 +230,7 @@ def load_mahidol_aqi_to_postgres():
         # --- Step 4: Insert into factMahidolAqiTable ---
         def clean_value(val):
             try:
-                return round(float(val), 2)
+                return round(float(val),2)
             except:
                 return None
 
@@ -259,6 +264,7 @@ def load_mahidol_aqi_to_postgres():
             clean_value(raw_data.get("Rainfall")),
             clean_value(raw_data.get("Solar Radiation"))
         ))
+
         conn.commit()
         logging.info("Finished load_mahidolAQI_to_postgres")
 
@@ -281,7 +287,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='mahidol_aqi_pipeline_v2',
+    dag_id='mahidol_aqi_pipeline_v1_7',
     schedule_interval='30 * * * *',
     default_args=default_args,
     description='A simple data pipeline for Mahidol AQI report',

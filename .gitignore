@@ -8,3 +8,5 @@ docker-compose.txt
 /backup_db
 ETC/connection_airflow.txt
 Air Quality Risk Dashboard.pbix
+dags/test_rds_connection_dag.py
+/data

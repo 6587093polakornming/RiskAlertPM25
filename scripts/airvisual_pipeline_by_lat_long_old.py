@@ -10,7 +10,6 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.exceptions import AirflowSkipException
-from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 # ============ CONFIG ============ #
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,6 +20,8 @@ OUTPUT_FILE = OUTPUT_DIR / "tmp_airvisual.json"
 CITY = "Salaya"
 STATE = "Nakhon Pathom"
 COUNTRY = "Thailand"
+LATITUDE = 13.79059242
+LONGITUDE = 100.32622308
 
 # ============ FUNCTIONS ============ #
 def get_cursor():
@@ -41,45 +42,19 @@ def is_data_in_db(date_time_str):
         cursor.close()
         conn.close()
 
-def trigger_backup_dag(context):
-    dag_id = 'airvisual_pipeline_lat_long_v1'
-    run_id = f"manual__backup__{datetime.now().isoformat()}"
-    try:
-        trigger_dag(dag_id=dag_id, run_id=run_id, conf={})
-        logging.info(f"Triggered backup DAG: {dag_id}")
-    except Exception as e:
-        logging.error(f"Failed to trigger backup DAG: {e}")
-
-def get_dt_str_ts_bangkok(ts_str: str):
-    try:
-        # ตรวจสอบ datetime ของข้อมูลล่าสุด
-        # ts_str = data["data"]["current"]["pollution"]["ts"]
-        ts_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        ts_bangkok = ts_obj + timedelta(hours=7)
-        current_dt_str = ts_bangkok.strftime("%Y-%m-%d %H:%M")
-        return current_dt_str
-    except:
-        return None
-    
-def get_dt_str_ts(ts_str: str):
-    try:
-        # ตรวจสอบ datetime ของข้อมูลล่าสุด
-        # ts_str = data["data"]["current"]["pollution"]["ts"]
-        ts_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        current_dt_str = ts_obj.strftime("%Y-%m-%d %H:%M")
-        return current_dt_str
-    except:
-        return None    
-
-def get_data_from_airvisual(ti=None):
+def get_data_from_airvisual():
     config = configparser.ConfigParser()
     config.read(CONFIG_PATH)
 
     api_key = config.get("api", "airvisual_key")
 
+    # URL = (
+    #     "http://api.airvisual.com/v2/city"
+    #     f"?city={CITY}&state={STATE}&country={COUNTRY}&key={api_key}"
+    # )
     URL = (
-        "http://api.airvisual.com/v2/city"
-        f"?city={CITY}&state={STATE}&country={COUNTRY}&key={api_key}"
+        "http://api.airvisual.com/v2/nearest_city"
+        f"?lat={LATITUDE}&lon={LONGITUDE}&key={api_key}"
     )
 
     logging.info(f"Requesting data from: {URL}")
@@ -90,9 +65,9 @@ def get_data_from_airvisual(ti=None):
 
         # ตรวจสอบ datetime ของข้อมูลล่าสุด
         ts_str = data["data"]["current"]["pollution"]["ts"]
-        w_ts_str = data["data"]["current"]["weather"]["ts"]
-        current_dt_str = get_dt_str_ts_bangkok(ts_str)
-        w_current_dt_str = get_dt_str_ts_bangkok(w_ts_str)
+        ts_obj = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        ts_bangkok = ts_obj + timedelta(hours=7)
+        current_dt_str = ts_bangkok.strftime("%Y-%m-%d %H:%M")
 
         # เชื่อมต่อ Database แล้วตรวจสอบว่า datetime นี้มีอยู่แล้วหรือไม่
         data_time_now_obj = datetime.now()+ timedelta(hours=7)
@@ -105,16 +80,15 @@ def get_data_from_airvisual(ti=None):
             with open(OUTPUT_FILE, "r", encoding="utf-8") as f_check:
                 prev_data = json.load(f_check)
             prev_dt_str = prev_data["data"]["current"]["pollution"]["ts"]
-            w_prev_dt_str = prev_data["data"]["current"]["weather"]["ts"]
-            ti.xcom_push(key='prev_dt_str', value=prev_dt_str)
-            ti.xcom_push(key='w_prev_dt_str', value=w_prev_dt_str)
-
-            if current_dt_str == prev_dt_str \
-                and w_current_dt_str == prev_dt_str  \
-                and is_data_in_db(prev_dt_str):
+            prev_dt_obj = datetime.strptime(prev_dt_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+            prev_dt_obj = prev_dt_obj + timedelta(hours=7)
+            prev_dt_str = prev_dt_obj.strftime("%Y-%m-%d %H:%M")
+            if current_dt_str == prev_dt_str and is_data_in_db(prev_dt_str):
                 raise Exception(f"Data has not been updated yet: {current_dt_str} == {prev_dt_str}")
 
         # ใช้หลักการ "Atomic File Write":
+        # เขียนลงไฟล์ชั่วคราว (.tmp) แล้วค่อย rename เป็นไฟล์จริง
+        # เพื่อป้องกันปัญaหาการอ่านไฟล์ไม่สมบูรณ์ใน Task ถัดไป
         tmp_path = Path(str(OUTPUT_FILE) + ".tmp")
         with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -126,7 +100,7 @@ def get_data_from_airvisual(ti=None):
         logging.error(f"Request failed: {e}")
         raise
 
-def read_json_data(ti=None):
+def read_json_data():
     try:
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -136,70 +110,45 @@ def read_json_data(ti=None):
         logging.error(f"Error reading JSON file: {e}")
         raise
 
-def load_airvisual_to_postgres(ti=None):
-    def parse_utc_to_bangkok(ts_str):
-        return datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(hours=7)
-    conn, cursor = get_cursor()
-    state_flow = 0  # 0: reset, 1: Normal, 2: Only weather, 3: Only pollution, 4: error
+def load_airvisual_to_postgres():
+    
+    conn ,cursor = get_cursor() 
     try:
-        # Load mapping files
+        # Load pollution mapping from config
         with open('/opt/airflow/config/mapping_main_pollution.json', 'r', encoding='utf-8') as mf:
             pollution_mapping = json.load(mf)
 
+        # Load Weather code data
         with open('/opt/airflow/config/mapping_weather_code.json', 'r', encoding='utf-8') as wf:
             weather_mapping = json.load(wf)
 
-        # Load raw data
+        # Load raw JSON data
         with open('/opt/airflow/data/tmp_airvisual.json', 'r', encoding='utf-8') as f:
             raw_data = json.load(f)
+        
+        date_time_str = raw_data["data"]["current"]["pollution"]["ts"]
+        date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        date_time_obj_bangkok = date_time_obj + timedelta(hours=7)
+        date_str = date_time_obj_bangkok.strftime("%Y-%m-%d")
+        time_str = date_time_obj_bangkok.strftime("%H:%M")
 
-        contents_data = raw_data["data"]
-        pollution_ts = contents_data["current"]["pollution"]["ts"]
-        weather_ts = contents_data["current"]["weather"]["ts"]
-
-        prev_dt_str, w_prev_dt_str = None, None
-        prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='prev_dt_str')
-        w_prev_dt_str = ti.xcom_pull(task_ids='get_data_from_airvisual', key='w_prev_dt_str')
-
-        # Flow Conditions
-        date_time_obj, date_time_obj_bangkok = None, None
-        date_str, time_str = None, None
-
-        logging.info(f"weather_ts: {weather_ts} pollution_ts: {pollution_ts}")
-        logging.info(f"w_prev_dt_st: {w_prev_dt_str} prev_dt_str: {prev_dt_str}")
-        if weather_ts == pollution_ts:
-            date_time_obj = parse_utc_to_bangkok(pollution_ts)
-            state_flow = 1
-            logging.info("flow state1")
-        elif weather_ts != pollution_ts and weather_ts != w_prev_dt_str and pollution_ts == prev_dt_str:
-            date_time_obj = parse_utc_to_bangkok(weather_ts)
-            state_flow = 2
-            logging.info("flow state2")
-        elif weather_ts != pollution_ts and weather_ts == w_prev_dt_str and pollution_ts != prev_dt_str:
-            date_time_obj = parse_utc_to_bangkok(pollution_ts)
-            state_flow = 3
-            logging.info("flow state3")
-        else:
-            state_flow = 4
-            logging.warning("Unrecognized data flow state.")
-
-        if date_time_obj:
-            date_time_obj_bangkok = date_time_obj
-            date_str = date_time_obj_bangkok.strftime("%Y-%m-%d")
-            time_str = date_time_obj_bangkok.strftime("%H:%M")
-
-        # Insert dimDateTimeTable
+        # --- Step 1: Insert into dimDateTimeTable (if not exists) ---
         cursor.execute("""
             INSERT INTO dimDateTimeTable (date_time, date, time, day, month, year, hour)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (date_time) DO NOTHING;
         """, (
-            date_time_obj_bangkok, date_str, time_str,
-            date_time_obj_bangkok.day, date_time_obj_bangkok.month,
-            date_time_obj_bangkok.year, date_time_obj_bangkok.hour
+            date_time_obj_bangkok, 
+            date_str,
+            time_str,
+            date_time_obj_bangkok.day,
+            date_time_obj_bangkok.month,
+            date_time_obj_bangkok.year,
+            date_time_obj_bangkok.hour
         ))
 
-        # Insert dimLocationTable
+        # --- Step 2: Insert into dimLocationTable (if not exists) ---
+        contents_data: dict = raw_data["data"]
         latitude = round(float(contents_data["location"]["coordinates"][1]), 6)
         longitude = round(float(contents_data["location"]["coordinates"][0]), 6)
         country = contents_data["country"]
@@ -208,58 +157,59 @@ def load_airvisual_to_postgres(ti=None):
         description = f"{city} {state} {country}"
 
         cursor.execute("""
-            SELECT location_id FROM dimLocationTable WHERE description = %s;
+            SELECT description, location_id FROM dimLocationTable
+            WHERE description = %s;
         """, (description,))
         result = cursor.fetchone()
-        location_id = result[0] if result else None
-
-        if not location_id:
-            cursor.execute("""
+        print(f"fecth cursor result find location id: {result}")
+        if result:
+            location_id = result[1]
+        else:
+            cursor.execute(""" 
                 INSERT INTO dimLocationTable (latitude, longitude, description, country, state, city)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 RETURNING location_id;
             """, (latitude, longitude, description, country, state, city))
             location_id = cursor.fetchone()[0]
 
-        # Insert dimMainPollutionTable
-        main_code = contents_data["current"]["pollution"]["mainus"]
-        mapping = pollution_mapping.get(main_code, {"unit": "unknown", "name_pollution": main_code})
+         # --- Step 3: Insert into dimMainPollutionTable (if not exists) ---
+        main_code = raw_data["data"]["current"]["pollution"]["mainus"]
         if main_code not in pollution_mapping:
-            logging.warning(f"Pollution code '{main_code}' not found in mapping.")
+            logging.warning(f"Pollution code '{main_code}' not found in mapping file.")
+        mapping = pollution_mapping.get(main_code, {"unit": "unknown", "name_pollution": main_code})
         cursor.execute("""
             INSERT INTO dimMainPollutionTable (main_pollution_code, unit, name_pollution)
             VALUES (%s, %s, %s)
             ON CONFLICT (main_pollution_code) DO NOTHING;
         """, (main_code, mapping['unit'], mapping['name_pollution']))
 
-        # Insert factAirVisualTable
-        weather_data:dict = contents_data["current"]["weather"]
+        # --- Step 4: Insert into factAirVisualTable ---
+        weather_data: dict = contents_data.get("current").get("weather")
         weather_code = weather_data.get("ic")
-        wmapping = weather_mapping.get(weather_code, {})
-        weather_name = wmapping.get("name")
-
         if weather_code not in weather_mapping:
-            logging.warning(f"Weather code '{weather_code}' not found in mapping.")
-
+            logging.warning(f"weather code '{weather_code}' not found in mapping file.")
+        wmapping: dict = weather_mapping.get(weather_code)
+        weather_name = wmapping.get("name") if wmapping else None
+        
         cursor.execute("""
             INSERT INTO factairvisualtable (
                 date_time, location_id, main_pollution_code,
                 aqi_us, temperature_c, pressure,
                 humidity, wind_speed, wind_direction, weather_text
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
             ON CONFLICT (date_time, location_id, main_pollution_code) DO NOTHING;
-        """, (
+        """,(
             date_time_obj_bangkok,
             location_id,
-            main_code if state_flow in (1, 3) else None,
-            contents_data["current"]["pollution"]["aqius"] if state_flow in (1, 3) else None,
-            weather_data.get("tp") if state_flow in (1, 2) else None,
-            weather_data.get("pr") if state_flow in (1, 2) else None,
-            weather_data.get("hu") if state_flow in (1, 2) else None,
-            weather_data.get("ws") if state_flow in (1, 2) else None,
-            weather_data.get("wd") if state_flow in (1, 2) else None,
-            weather_name if state_flow in (1, 2) else None
+            main_code,
+            contents_data["current"]["pollution"]["aqius"],
+            weather_data.get("tp"),
+            weather_data.get("pr"),
+            weather_data.get("hu"),
+            weather_data.get("ws"),
+            weather_data.get("wd"),
+            weather_name
         ))
 
         conn.commit()
@@ -275,6 +225,7 @@ def load_airvisual_to_postgres(ti=None):
         conn.close()
         logging.info("ETL to PostgreSQL Completed")
 
+
 # ============ DAG ============ #
 default_args = {
     'owner': 'Polakorn Anantapakorn Ming',
@@ -284,16 +235,15 @@ default_args = {
 }
 
 with DAG(
-    dag_id='airvisual_pipeline_v1_21',
-    schedule_interval='30 * * * *',
+    dag_id='airvisual_pipeline_lat_long_v1',
+    schedule_interval=None,
     default_args=default_args,
-    description='A simple data pipeline for airvisual API',
+    description='A simple data pipeline for airvisual API by lat long',
     catchup=False,
-    on_failure_callback=trigger_backup_dag,
 ) as dag:
 
     t1 = PythonOperator(
-        task_id='get_data_from_airvisual',
+        task_id='get_airvisual_data_hourly',
         python_callable=get_data_from_airvisual,
         retries= 2,
         retry_delay=timedelta(minutes=5)

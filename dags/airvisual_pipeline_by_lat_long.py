@@ -17,6 +17,7 @@ CONFIG_PATH = BASE_DIR / "config" / "config.conf"
 OUTPUT_DIR = BASE_DIR / "data"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_FILE = OUTPUT_DIR / "tmp_airvisual.json"
+
 CITY = "Salaya"
 STATE = "Nakhon Pathom"
 COUNTRY = "Thailand"
@@ -104,8 +105,8 @@ def read_json_data():
     try:
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
+        logging.info("Extracted data: %s", data)
         logging.info("Read JSON file successfully.")
-        # Optional: Validate or transform data
     except Exception as e:
         logging.error(f"Error reading JSON file: {e}")
         raise
@@ -235,7 +236,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='airvisual_pipeline_lat_long_v1',
+    dag_id='airvisual_pipeline_lat_long_v2',
     schedule_interval=None,
     default_args=default_args,
     description='A simple data pipeline for airvisual API by lat long',
