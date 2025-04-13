@@ -1,0 +1,18 @@
+{
+  "Datetime": "2025-04-13T20:00:00",
+  "Air Quality": "Satisfactory",
+  "Main Pollution": "O3",
+  "AQI": "35",
+  "PM25": "4",
+  "PM10": "9",
+  "O3": "19.1",
+  "CO": "0.1",
+  "NO2": "10.7",
+  "SO2": "0.8",
+  "Temperature": "32.6",
+  "Humidity": "59",
+  "Wind Speed": "1.2",
+  "Wind Direction": "148",
+  "Rainfall": "0",
+  "Solar Radiation": "752"
+}
