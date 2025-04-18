@@ -373,36 +373,36 @@ def alert_email():
 default_args = {
     'owner': 'Polakorn Anantapakorn Ming',
     'start_date': datetime(2025, 3, 20),
-    'retries': 2,
-    'retry_delay': timedelta(minutes=3),
 }
 
 with DAG(
-    dag_id='mahidol_aqi_pipeline_v2',
-    schedule_interval='30 * * * *',
+    dag_id='mahidol_aqi_pipeline_v2_alert_1',
+    # schedule_interval='30 * * * *',
+    schedule_interval=None,
     default_args=default_args,
     description='A simple data pipeline for Mahidol AQI report',
     catchup=False,
 ) as dag:
 
-    t1 = PythonOperator(
-        task_id='scraping_mahidol_aqi_report',
-        python_callable=get_data_mahidol_aqi_report
-    )
+    # t1 = PythonOperator(
+    #     task_id='scraping_mahidol_aqi_report',
+    #     python_callable=get_data_mahidol_aqi_report
+    # )
 
-    t2 = PythonOperator(
-        task_id='create_json_mahidol_aqi',
-        python_callable=create_json_object
-    )
+    # t2 = PythonOperator(
+    #     task_id='create_json_mahidol_aqi',
+    #     python_callable=create_json_object
+    # )
 
-    t3 = PythonOperator(
-        task_id='load_data_mahidolAQI_to_postgresql',
-        python_callable=load_mahidol_aqi_to_postgres
-    )
+    # t3 = PythonOperator(
+    #     task_id='load_data_mahidolAQI_to_postgresql',
+    #     python_callable=load_mahidol_aqi_to_postgres
+    # )
 
     t4 = PythonOperator(
         task_id='alert_email',
         python_callable=alert_email
     )
 
-    t1 >> t2 >> [t3, t4]
+    # t1 >> t2 >> [t3, t4]
+    t4

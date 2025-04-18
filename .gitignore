@@ -9,3 +9,4 @@ docker-compose.txt
 ETC/connection_airflow.txt
 Air Quality Risk Dashboard.pbix
 dags/test_rds_connection_dag.py
+*.txt
