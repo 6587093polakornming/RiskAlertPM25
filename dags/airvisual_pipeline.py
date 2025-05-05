@@ -50,7 +50,7 @@ def is_data_in_db(date_time_str):
         conn.close()
 
 def trigger_backup_dag(context):
-    dag_id = 'airvisual_pipeline_lat_long_v1'
+    dag_id = 'airvisual_pipeline_lat_long_v2'
     run_id = f"manual__backup__{datetime.now().isoformat()}"
     try:
         trigger_dag(dag_id=dag_id, run_id=run_id, conf={})

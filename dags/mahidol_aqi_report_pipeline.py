@@ -277,6 +277,7 @@ def load_mahidol_aqi_to_postgres():
 
 # --- ====== TASK 4 ====== ---
 def alert_email():
+    # Subfunction: ส่งอีเมลแจ้งเตือนผ่าน SMTP Gmail
     def email_alert(subject: str, body: str, to: str):
         msg = EmailMessage()
         msg.set_content(body)
@@ -294,20 +295,22 @@ def alert_email():
 
         try:
             with smtplib.SMTP("smtp.gmail.com", 587) as server:
-                server.starttls()
+                server.starttls()  # เข้ารหัสแบบ TLS
                 server.login(user, password)
                 server.send_message(msg)
                 logging.info(f"Email sent to {to}")
         except Exception as e:
             logging.error(f"Failed to send email to {to}: {e}")
-            raise
+            raise  # Re-raise เพื่อให้ Airflow handle failure
 
+    # Subfunction: แปลงค่าเป็น float แล้วปัดเป็นทศนิยม 2 ตำแหน่ง
     def clean_value(val):
         try:
             return round(float(val), 2)
         except (TypeError, ValueError):
             return None
 
+    # STEP 1: Load AQI JSON ที่ถูกสร้างไว้ใน Task ก่อนหน้า
     try:
         with open(DATA_DIR / "tmp_mahidol.json", 'r', encoding='utf-8') as f:
             raw_data = json.load(f)
@@ -315,6 +318,7 @@ def alert_email():
         logging.error(f"Error loading AQI JSON data: {e}")
         raise
 
+    # STEP 2: ตรวจสอบค่าดัชนี AQI และจัดกลุ่มระดับความรุนแรง
     aqi_value = clean_value(raw_data.get("AQI"))
     body = None
 
@@ -322,36 +326,38 @@ def alert_email():
         if 0 <= aqi_value <= 50:
             logging.info(f"AQI is safe ({aqi_value}). No alert needed.")
             raise AirflowSkipException("AQI in safe range. Skipping alert.")
-        elif 51 <= aqi_value <= 100:
-            logging.info(f"AQI is ({aqi_value}) alert. 51 <= aqi_value <= 100")
+        
+        elif 50 < aqi_value <= 100:
+            logging.info(f"AQI is moderate ({aqi_value}).")
             body = (
                 f"ค่า AQI ปัจจุบัน {aqi_value}\n"
                 "⚠️ AQI อยู่ในระดับปานกลาง (51-100)\n"
                 "ประชาชนทั่วไปสามารถทำกิจกรรมกลางแจ้งได้ตามปกติ\n"
                 "ผู้ที่มีโรคประจำตัวควรสังเกตอาการ เช่น ไอ หายใจลำบาก ระคายเคืองตา"
             )
-        elif 101 <= aqi_value <= 200:
-            logging.info(f"AQI is ({aqi_value}) alert. 101 <= aqi_value <= 200")
+        elif 100 < aqi_value <= 200:
+            logging.info(f"AQI is unhealthy for sensitive groups ({aqi_value}).")
             body = (
                 f"ค่า AQI ปัจจุบัน {aqi_value}\n"
                 "⚠️ AQI อยู่ในระดับเริ่มมีผลกระทบต่อสุขภาพ (101-200)\n"
-                "ประชาชนทั่วไปควรลดระยะเวลาทำกิจกรรมกลางแจ้ง หากมีอาการควรหยุดพัก\n"
+                "ประชาชนทั่วไปควรลดกิจกรรมกลางแจ้ง\n"
                 "ผู้ที่มีโรคประจำตัวควรใช้หน้ากาก และพบแพทย์หากมีอาการผิดปกติ"
             )
         elif aqi_value > 200:
-            logging.info(f"AQI is ({aqi_value}) alert. aqi_value > 200")
+            logging.info(f"AQI is very unhealthy ({aqi_value}).")
             body = (
                 f"ค่า AQI ปัจจุบัน {aqi_value}\n"
                 "🚨 AQI มีผลกระทบต่อสุขภาพมาก (มากกว่า 200)\n"
-                "ควรหลีกเลี่ยงกิจกรรมกลางแจ้งทุกชนิด และควรใช้อุปกรณ์ป้องกันตนเอง\n"
-                "หากมีอาการผิดปกติควรรีบพบแพทย์ทันที"
+                "ควรหลีกเลี่ยงกิจกรรมกลางแจ้ง และใช้อุปกรณ์ป้องกันตนเอง"
             )
         else:
             logging.warning(f"AQI has unexpected value: {aqi_value}")
+            raise AirflowSkipException("Invalid AQI value. Skipping alert.")
     else:
         logging.warning("AQI value not found in data.")
         raise AirflowSkipException("No AQI value to evaluate.")
 
+    # STEP 3: โหลดรายชื่อผู้รับอีเมลจากไฟล์ข้อความ
     users_file = BASE_DIR / "config" / "pm25_alert_emails.txt"
     try:
         with open(users_file, "r", encoding="utf-8") as file:
@@ -364,6 +370,7 @@ def alert_email():
         logging.warning("No recipients found in email list. Skipping alert.")
         raise AirflowSkipException("No recipients to send to.")
 
+    # STEP 4: ส่งอีเมลให้ทุกคนในลิสต์
     for email in recipients:
         email_alert(subject="PM2.5 Alert Notification", body=body, to=email)
 
