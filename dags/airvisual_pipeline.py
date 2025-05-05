@@ -194,8 +194,8 @@ def load_airvisual_to_postgres(ti=None):
             logging.info("flow state1: both timestamps are the same")
 
         elif not is_first_run:
-            weather_updated = weather_ts_str != prev_weather_dt_str
-            pollution_updated = pollution_ts_str != prev_pollution_dt_str
+            weather_updated = weather_ts_str == iso_format_str
+            pollution_updated = pollution_ts_str == iso_format_str
             if weather_updated and not pollution_updated:
                 date_time_obj = parse_to_dt_bangkok(weather_ts_str)
                 state_flow = StateFlow.ONLY_WEATHER
