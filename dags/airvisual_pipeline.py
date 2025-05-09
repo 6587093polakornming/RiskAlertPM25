@@ -5,6 +5,7 @@ import configparser
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from enum import Enum
+from urllib.parse import urlencode, quote
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -74,10 +75,15 @@ def get_data_from_airvisual(ti=None):
     config = configparser.ConfigParser()
     config.read(CONFIG_PATH)
     api_key = config.get("api", "airvisual_key")
-    URL = (
-        "http://api.airvisual.com/v2/city"
-        f"?city={CITY}&state={STATE}&country={COUNTRY}&key={api_key}"
-    )
+
+    params = {                 # ให้ requests จัดการ encode ให้ทั้งหมด
+        "city": CITY,
+        "state": STATE,
+        "country":COUNTRY,
+        "key": api_key
+    }
+
+    URL = f"http://api.airvisual.com/v2/city?{urlencode(params, quote_via=quote)}"
     logging.info(f"Requesting data from: {URL}")
     
     try:
