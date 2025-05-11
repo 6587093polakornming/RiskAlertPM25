@@ -117,6 +117,28 @@ open http://localhost:8080     # default creds: airflow / airflow
 
 ---
 
+## Local Configuration — `config/config.conf`
+
+Create a plain‑text file named **`config.conf`** in the project’s `config/` folder with the following INI format:
+
+```ini
+[api]
+airvisual_key = <YOUR_API_KEY>
+
+[email]
+password = <YOUR_DEVICE_PASSWORD>
+```
+
+| Section / Key | Purpose | Notes |
+|---------------|---------|-------|
+| `[api]` | Holds credentials for external APIs. | Currently only **AirVisual** is needed; additional sources can be added later. |
+| `airvisual_key` | Your personal or organisational AirVisual API key. | **Keep this private** – never commit the real key to Git. |
+| `[email]` | Credentials for the alert‑notification sender account. | Used by `alert_email()` in the Airflow DAGs. |
+| `password` | An **app‑specific** or **device** password for the e‑mail account. | For Gmail, generate an App Password rather than using your normal login. |
+
+> **Security tip:** `config/config.conf` is already listed in `.gitignore`, so real secrets won’t be pushed to GitHub.
+
+
 ## Database
 
 ### Dimensions
